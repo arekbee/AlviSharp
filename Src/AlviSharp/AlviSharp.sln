@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{2051168C-BE69-4CB3-84BD-D479DA2FC016}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlviSharp.Lib", "Src\AlviSharp.Lib\AlviSharp.Lib.csproj", "{989D56B6-BCC8-4A8F-A539-650465A338DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlviSharp.Validator", "Src\AlvisSharp.Validator\AlviSharp.Validator.csproj", "{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlviSharp.Serializer", "Src\AlviSharp.Serializer\AlviSharp.Serializer.csproj", "{DE46321F-1C02-4138-9D52-6918831B22E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5785B825-2F8D-4724-883C-1C9ACA8F3A68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlviSharp.Validator.ITests", "Tests\AlviSharp.Validator.ITests\AlviSharp.Validator.ITests.csproj", "{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run", "Run", "{364FC5C0-A14C-473F-9EB1-C07B3D7FF43F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlviSharp.Validator.Cmd", "Run\AlviSharp.Validator.Cmd\AlviSharp.Validator.Cmd.csproj", "{D6E0D889-0D46-4C7F-BAE7-FB0F1AB8DD5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlviSharp.Serializer.Cmd", "Run\AlviSharp.Serializer.Cmd\AlviSharp.Serializer.Cmd.csproj", "{32D1F583-FE78-4608-B017-48D4D09A6621}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD}.Release|x86.Build.0 = Release|Any CPU
+		{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}.Debug|x86.Build.0 = Debug|Any CPU
+		{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}.Release|x86.ActiveCfg = Release|Any CPU
+		{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}.Release|x86.Build.0 = Release|Any CPU
+		{32D1F583-FE78-4608-B017-48D4D09A6621}.Debug|x86.ActiveCfg = Debug|x86
+		{32D1F583-FE78-4608-B017-48D4D09A6621}.Debug|x86.Build.0 = Debug|x86
+		{32D1F583-FE78-4608-B017-48D4D09A6621}.Release|x86.ActiveCfg = Release|x86
+		{32D1F583-FE78-4608-B017-48D4D09A6621}.Release|x86.Build.0 = Release|x86
+		{989D56B6-BCC8-4A8F-A539-650465A338DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{989D56B6-BCC8-4A8F-A539-650465A338DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{989D56B6-BCC8-4A8F-A539-650465A338DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{989D56B6-BCC8-4A8F-A539-650465A338DA}.Release|x86.Build.0 = Release|Any CPU
+		{D6E0D889-0D46-4C7F-BAE7-FB0F1AB8DD5F}.Debug|x86.ActiveCfg = Debug|x86
+		{D6E0D889-0D46-4C7F-BAE7-FB0F1AB8DD5F}.Debug|x86.Build.0 = Debug|x86
+		{D6E0D889-0D46-4C7F-BAE7-FB0F1AB8DD5F}.Release|x86.ActiveCfg = Release|x86
+		{D6E0D889-0D46-4C7F-BAE7-FB0F1AB8DD5F}.Release|x86.Build.0 = Release|x86
+		{DE46321F-1C02-4138-9D52-6918831B22E8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DE46321F-1C02-4138-9D52-6918831B22E8}.Debug|x86.Build.0 = Debug|Any CPU
+		{DE46321F-1C02-4138-9D52-6918831B22E8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DE46321F-1C02-4138-9D52-6918831B22E8}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{989D56B6-BCC8-4A8F-A539-650465A338DA} = {2051168C-BE69-4CB3-84BD-D479DA2FC016}
+		{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C} = {2051168C-BE69-4CB3-84BD-D479DA2FC016}
+		{DE46321F-1C02-4138-9D52-6918831B22E8} = {2051168C-BE69-4CB3-84BD-D479DA2FC016}
+		{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD} = {5785B825-2F8D-4724-883C-1C9ACA8F3A68}
+		{D6E0D889-0D46-4C7F-BAE7-FB0F1AB8DD5F} = {364FC5C0-A14C-473F-9EB1-C07B3D7FF43F}
+		{32D1F583-FE78-4608-B017-48D4D09A6621} = {364FC5C0-A14C-473F-9EB1-C07B3D7FF43F}
+	EndGlobalSection
+EndGlobal

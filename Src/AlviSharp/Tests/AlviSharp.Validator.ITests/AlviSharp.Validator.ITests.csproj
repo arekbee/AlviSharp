@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{27D0F1DC-54E9-41EB-AFC2-2FCD806D00DD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AlviSharp.Validator.ITests</RootNamespace>
+    <AssemblyName>AlviSharp.Validator.ITests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExampleDataFeedTests.cs" />
+    <Compile Include="DataFeedTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Examples\example.alvis">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Examples\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\AlviSharp.Lib\AlviSharp.Lib.csproj">
+      <Project>{989D56B6-BCC8-4A8F-A539-650465A338DA}</Project>
+      <Name>AlviSharp.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\AlviSharp.Serializer\AlviSharp.Serializer.csproj">
+      <Project>{DE46321F-1C02-4138-9D52-6918831B22E8}</Project>
+      <Name>AlviSharp.Serializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\AlvisSharp.Validator\AlviSharp.Validator.csproj">
+      <Project>{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}</Project>
+      <Name>AlviSharp.Validator</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

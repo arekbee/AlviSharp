@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{32CA86E5-1DED-410F-B8C9-2F919D8ECA8C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AlvisSharp.Validator</RootNamespace>
+    <AssemblyName>AlvisSharp.Validator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IAlvisCodeValidator.cs" />
+    <Compile Include="IAlvisValidator.cs" />
+    <Compile Include="AgentAlvisValidator.cs" />
+    <Compile Include="AtLeastOneActiveAgentAlvisValidator.cs" />
+    <Compile Include="ConnectionAlvisValidator.cs" />
+    <Compile Include="CodeAlvisValidator.cs" />
+    <Compile Include="AtLeastOnePortOnPassiveAgentAlvisValidator.cs" />
+    <Compile Include="AllIAlvisValidator.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\AlviSharp.Lib\AlviSharp.Lib.csproj">
+      <Project>{989D56B6-BCC8-4A8F-A539-650465A338DA}</Project>
+      <Name>AlviSharp.Lib</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
