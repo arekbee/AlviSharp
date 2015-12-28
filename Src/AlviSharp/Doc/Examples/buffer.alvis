@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE alvisproject PUBLIC "alvisPublicId-v0.1" "alvisSystemId-v0.1">
+<alvisproject>
+<hierarchy>
+<node agent="" name="System"/>
+</hierarchy>
+<page name="System">
+<agent active="0" color="white" height="100.0" index="1" name="Buffer" running="0" width="140.0" x="20.0" y="20.0">
+<port color="white" id="20576501" name="pop" x="0.0" y="0.2"/>
+<port color="white" id="399821995" name="push" x="0.0" y="0.7"/>
+</agent>
+</page>
+<code>agent Buffer {
+  i :: Int = 0;
+  proc pop  { out pop i; exit; }
+  proc push { in  push i; exit; }
+}</code>
+</alvisproject>
+

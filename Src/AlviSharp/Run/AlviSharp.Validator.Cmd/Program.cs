@@ -1,6 +1,8 @@
 ﻿using System;
 using AlviSharp.Serializer;
 using AlvisSharp.Validator;
+using System.IO;
+using System.Collections.Generic;
 
 namespace AlviSharp.Validator.Cmd
 {
@@ -9,7 +11,7 @@ namespace AlviSharp.Validator.Cmd
 		public static void Main (string[] args)
 		{
 			string path = args [0];
-			if (!string.IsNullOrWhiteSpace (path) && File.Exist (path)) {
+			if (!string.IsNullOrWhiteSpace (path) && File.Exists (path)) {
 				var text = File.OpenText(path).ReadToEnd();
 
 				XmlAlvisSerializer serializer= new XmlAlvisSerializer();

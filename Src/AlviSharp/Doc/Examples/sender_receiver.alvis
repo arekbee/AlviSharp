@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE alvisproject PUBLIC "alvisPublicId-v0.1" "alvisSystemId-v0.1">
+<alvisproject>
+<hierarchy>
+<node agent="" name="System"/>
+</hierarchy>
+<page name="System">
+<agent active="1" color="white" height="100.0" index="1" name="A" running="0" width="140.0" x="20.0" y="20.0">
+<port color="white" id="1264647180" name="a" x="1.0" y="0.7999999999999999"/>
+</agent>
+<agent active="1" color="white" height="100.0" index="1" name="B" running="0" width="140.0" x="310.0" y="40.0">
+<port color="white" id="257401621" name="b" x="0.0" y="0.6000000000000001"/>
+</agent>
+<connection direction="target" source="1264647180" style="straight" target="257401621"/>
+</page>
+<code>agent A {
+  loop {    
+    out a; 
+  }
+}
+
+agent B {
+  loop {    
+    in b;   
+  }
+}</code>
+</alvisproject>
+

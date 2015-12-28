@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE alvisproject PUBLIC "alvisPublicId-v0.1" "alvisSystemId-v0.1">
+<alvisproject>
+<hierarchy>
+<node agent="" name="System"/>
+</hierarchy>
+<page name="System">
+<agent active="1" color="white" height="100.0" index="1" name="A" running="0" width="140.0" x="20.0" y="20.0">
+<port color="white" id="447594114" name="p" x="1.0" y="0.30000000000000004"/>
+<port color="white" id="25723012" name="q" x="1.0" y="0.6000000000000001"/>
+</agent>
+</page>
+<code>agent A {
+  i :: Int = 0;
+  loop {
+    select {
+      alt (i == 0) { 
+        in p;
+        i = 1;
+      }  
+      alt (i == 1) { 
+        in q;
+        i = 0;
+      }
+    }
+    select {
+      alt(i == 1) {
+        out p;
+      }    
+    }  
+  }
+</code>
+</alvisproject>
+
