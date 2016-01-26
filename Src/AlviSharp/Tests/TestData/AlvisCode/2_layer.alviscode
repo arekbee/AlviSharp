@@ -1,0 +1,11 @@
+agent A {
+  out a;
+}
+
+agent B {
+  in b;
+}
+
+agent C {
+  in c;
+}

@@ -1,0 +1,9 @@
+agent A {
+  i :: Int = 0;                          
+    select {                       
+      alt (i == 0) { 
+        in p;                      
+        i = 1;                     
+      }       
+  }
+}  

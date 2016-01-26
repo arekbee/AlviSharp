@@ -1,0 +1,6 @@
+agent A { -- this is first comment
+	--this it second comment
+  null; 
+  -- this is third comment
+}
+--this is last third

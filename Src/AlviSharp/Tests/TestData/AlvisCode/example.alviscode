@@ -1,0 +1,24 @@
+﻿agent Sender {
+    loop {
+    out put;
+    }
+    }
+
+agent Buffer {
+    i :: Int  = 0;
+    proc (i &gt;= 0) put {
+    in put;
+    i = 1;
+    }
+
+    proc (i /= 0) get {
+    out get;
+    i=0;
+    }
+}
+
+agent Receiver {
+    loop{
+    in get;
+    }
+}

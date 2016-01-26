@@ -1,0 +1,13 @@
+﻿
+
+agent Buffer {
+    i :: Int  = 0;
+    proc (i &gt;= 0) put {
+    in put;
+    exit;
+    }
+
+    proc (i /= 0) get {
+    exit;
+    }
+}

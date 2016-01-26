@@ -1,0 +1,21 @@
+agent A {
+  i :: Int = 0;
+  loop {                            -- 1
+    select {                        -- 2
+      alt (i == 0) { 
+        in p;                       -- 3 
+        i = 1;                      -- 4
+      }  
+      alt (i == 1) { 
+        in q;                       -- 5
+        i = 0;                      -- 6
+      }
+    }
+    if(i == 1) {                    -- 7
+      out p;                        -- 8
+    }         
+    else { 
+      null;                         -- 9
+    }  
+  }
+}  

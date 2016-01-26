@@ -1,0 +1,4 @@
+agent A {
+  in b;
+  out c;
+}

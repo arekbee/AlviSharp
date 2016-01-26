@@ -1,0 +1,5 @@
+agent Buffer {
+  i :: Int = 0;
+  proc pop  { out pop i; exit; }
+  proc push { in  push i; exit; }
+}

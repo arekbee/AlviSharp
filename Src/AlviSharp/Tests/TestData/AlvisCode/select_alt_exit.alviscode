@@ -1,0 +1,8 @@
+agent A {
+  i :: Int = 0;                          
+    select {                       
+      alt (i == 0) { 
+        exit;
+      }       
+  }
+}  

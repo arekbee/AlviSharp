@@ -1,0 +1,5 @@
+﻿agent Buffer {
+    i :: Int  = 0;
+    proc (i /= 0) get {
+    }
+}

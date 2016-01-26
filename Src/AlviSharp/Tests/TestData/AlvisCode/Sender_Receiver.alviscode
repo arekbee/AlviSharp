@@ -1,0 +1,11 @@
+﻿agent Sender {
+    loop {
+    out a;
+    }
+}
+
+agent Receiver {
+    loop{
+    in a;
+    }
+}

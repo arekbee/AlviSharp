@@ -1,0 +1,30 @@
+agent A, C {
+ 
+   x :: Int = 5;
+
+   out q x;
+
+ }
+
+ 
+
+ agent B {
+
+   x :: Int = 0;
+
+   proc p1 { 
+
+     in p1 x;
+
+     exit;
+
+   }
+
+   proc p2 { 
+
+     in p2 x;
+
+     exit;
+
+   }
+ 

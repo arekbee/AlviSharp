@@ -1,0 +1,23 @@
+agent Sender {
+  loop {                 -- 1   comments contain steps numbers
+    out put;             -- 2
+  }
+}
+
+agent Buffer {
+  i :: Int = 0;
+  proc (i == 0) put { 
+    in put;              -- 1
+    i = 1;               -- 2
+  }
+  proc (i /= 0) get { 
+    out get;             -- 3
+    i = 0;               -- 4
+  }
+}
+
+agent Receiver {
+  loop {                 -- 1
+    in get;              -- 2
+  }
+}

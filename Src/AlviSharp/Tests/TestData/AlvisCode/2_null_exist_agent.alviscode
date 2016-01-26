@@ -1,0 +1,7 @@
+agent A {
+  exit;
+}
+
+agent B {
+  null;
+}

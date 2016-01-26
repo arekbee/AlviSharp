@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE alvisproject PUBLIC "alvisPublicId-v0.1" "alvisSystemId-v0.1">
+<alvisproject>
+<hierarchy>
+<node agent="" name="System"/>
+</hierarchy>
+<page name="System">
+<agent active="1" color="white" height="100.0" index="1" name="Ph1" running="0" width="140.0" x="450.0" y="20.0"/>
+<agent active="1" color="white" height="100.0" index="1" name="Ph2" running="0" width="140.0" x="890.0" y="120.0"/>
+<agent active="1" color="white" height="100.0" index="1" name="Ph3" running="0" width="140.0" x="890.0" y="430.0"/>
+<agent active="1" color="white" height="100.0" index="1" name="Ph4" running="0" width="140.0" x="90.0" y="550.0">
+<port color="white" id="798114258" name="left" x="0.0" y="0.2"/>
+<port color="white" id="856888839" name="right" x="1.0" y="0.2"/>
+</agent>
+<agent active="1" color="white" height="100.0" index="1" name="Ph5" running="0" width="140.0" x="10.0" y="160.0"/>
+<agent active="0" color="white" height="100.0" index="1" name="F5" running="0" width="140.0" x="280.0" y="160.0">
+<port color="white" id="1497886445" name="put" x="0.0" y="0.2"/>
+<port color="white" id="609360244" name="get" x="0.0" y="0.7"/>
+</agent>
+<agent active="0" color="white" height="100.0" index="1" name="F1" running="0" width="140.0" x="640.0" y="160.0">
+<port color="white" id="1742115801" name="put" x="0.0" y="0.2"/>
+<port color="white" id="646173650" name="get" x="0.0" y="0.7"/>
+</agent>
+<agent active="0" color="white" height="100.0" index="1" name="F2" running="0" width="140.0" x="690.0" y="330.0">
+<port color="white" id="1603483708" name="put" x="0.0" y="0.2"/>
+<port color="white" id="544711951" name="get" x="0.0" y="0.8"/>
+</agent>
+<agent active="0" color="white" height="100.0" index="1" name="F3" running="0" width="140.0" x="470.0" y="490.0">
+<port color="white" id="1491716851" name="put" x="0.0" y="0.2"/>
+<port color="white" id="533525206" name="get" x="0.0" y="0.7"/>
+</agent>
+<agent active="0" color="white" height="100.0" index="1" name="F4" running="0" width="140.0" x="230.0" y="320.0">
+<port color="white" id="791049023" name="put" x="0.0" y="0.2"/>
+<port color="white" id="2141225089" name="get" x="0.0" y="0.7"/>
+</agent>
+</page>
+<code>agent Ph1, Ph2, Ph3, Ph4, Ph5 {
+  loop {
+    in right;
+    in left;
+    out right;
+    out left;
+  }
+  
+  }
+
+agent F1, F2, F3, F4, F5 {
+  taken :: Bool = False;
+
+  proc (taken == False) get {
+    taken = True;
+    out get;
+    
+  }
+
+  proc (taken == True) put {
+    taken = False;
+    in put;
+  }
+}
+</code>
+</alvisproject>
+

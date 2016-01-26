@@ -1,0 +1,6 @@
+agent A {
+    i :: Int = 0;
+    if(i == 1) {                 
+      out p;                     
+    }         
+}  

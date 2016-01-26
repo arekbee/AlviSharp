@@ -1,0 +1,6 @@
+﻿
+agent Receiver {
+    loop{
+	exit;
+    }
+}

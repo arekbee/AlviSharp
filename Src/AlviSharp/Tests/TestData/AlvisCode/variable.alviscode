@@ -1,0 +1,8 @@
+agent Variable {
+    i :: Int  = 0;
+    j :: Int = 1;
+	f :: Float = 0.0;
+	g :: float = 1.0;
+	b :: Bool = True;
+	nb :: Bool = False;
+}

@@ -1,0 +1,11 @@
+agent A {
+  i :: Int = 0;
+  loop {                           
+    select {                       
+      alt (i == 0) { 
+        in p;                      
+        i = 1;                     
+      }  
+    }       
+  }
+}  
