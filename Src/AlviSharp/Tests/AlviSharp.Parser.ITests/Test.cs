@@ -30,7 +30,7 @@ namespace AlviSharp.Parser.ITests
 			var content = File.ReadAllText(filePath);
 			Assert.IsNotEmpty(content);
 			StringAssert.Contains("agent", content.ToLower());
-			var parsed = AlvisParserNS.Program.ParseAlvis(content);
+			var parsed = AlviSharp.Parser.ParseAlvis(content);
 			Assert.IsNotNull(parsed);
 		}
 		public static System.Collections.IEnumerable TestCaseSource_Filename
