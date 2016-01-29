@@ -1,0 +1,7 @@
+﻿
+agent A {
+    i :: string = 'xyz';
+    k :: string = asd
+    m :: string = "abc"
+}
+

@@ -1,0 +1,115 @@
+%{   
+open AlvisSpec  
+%}   
+ 
+%token <string> ID   
+%token <int> INT   
+%token <float> FLOAT   
+
+
+%token PORT IN OUT 
+%token PROC NULL LOOP EXIT SELECT  IF ELSE
+
+%token EOF   
+%token BRACESOPEN BRACESCLOSE PARENTHESEOPEN PARENTHESECLOSE COMMA DOUBLECOLON SEMICOLON COMMENT
+%token EQ LT LE GT GE NE
+%token AGENT 
+%type <AlvisSpec.Agents> start   
+
+// start   
+%start start   
+
+ 
+%%   
+ 
+start:  alvisStatements EOF {$1}
+
+alvisStatements:
+    | alvisStatement {[$1]}
+    | alvisStatement alvisStatements {$1 :: $2}
+
+alvisStatement:
+    | AGENT agentList BRACESOPEN agentBody BRACESCLOSE { {AgentList =  $2; AgentBody = $4}}  
+
+    
+agentBody:
+    | valueList portList  loopClause conditionClause           { {Null = false; Values = $1; Ports = $2;  Looping = $3; Condition = $4}}
+    | NULL                                                      { {Null = true;  Values = []; Ports = [];  Looping = None; Condition  = []}}
+
+
+
+conditionClause:
+    | {[]}
+    | conditionIfElseClause {[$1]}
+    | conditionIfElseClause conditionClause   { $1 :: $2 }
+
+
+conditionIfElseClause:
+    | conditionIfClause {$1}
+
+conditionIfClause:
+    | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE  {{Guard=$3; ConditionBody=$6; ElseConditionBody=None}}
+    | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE ELSE BRACESOPEN conditionBody BRACESCLOSE{{Guard=$3; ConditionBody=$6; ElseConditionBody=Some($10)}}
+
+guardClause:
+    | {Const(true)}
+    | value op value { Cond($1,$2,$3)}
+
+conditionBody:
+    | portList  loopClause conditionClause            { { Ports = $1;  Looping = $2; Condition = $3}}
+
+
+loopClause:
+    | {None}
+    | LOOP {None}
+    | LOOP BRACESOPEN BRACESCLOSE {None}
+    | LOOP BRACESOPEN loopBody BRACESCLOSE {Some($3)}
+
+loopBody:
+    | {{Exit = false; Ports=[] }}
+    | EXIT nextLine {{Exit= true; Ports=[]}}
+    | portList {{Exit=false; Ports = $1 }}
+
+valueList:
+    |   {[]}
+    | valueClause {[$1]}
+    | valueList  nextLine valueClause { $3::$1 }
+
+
+valueClause:
+    | ID DOUBLECOLON valueType { {Name = $1; Value = $3 }}
+
+valueType:   
+    | ID EQ value                              { $3 }   
+
+
+value:   
+    | INT                   { Int($1) }   
+    | FLOAT                 { Float($1) }   
+    | ID                    { String($1) }   
+
+
+
+op: EQ { Eq } | LT { Lt } | LE { Le } | GT { Gt } | GE { Ge }  | NE {Ne}
+
+agentList:   
+    | ID                    { [$1]}   
+    | agentList COMMA ID  { $3 :: $1 }    
+
+nextLine:
+    |   {}
+    | SEMICOLON {}
+    | SEMICOLON COMMENT {}
+
+portList:
+    |       { [] }   
+    | portClause nextLine {[$1]}
+    | portList  portClause nextLine   {$2 :: $1}
+
+portClause:
+    | IN  ID    { In($2)}
+    | OUT  ID   { Out($2)}
+
+
+%%
+

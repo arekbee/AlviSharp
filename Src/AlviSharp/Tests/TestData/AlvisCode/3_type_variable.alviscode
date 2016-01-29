@@ -1,0 +1,7 @@
+﻿
+agent A {
+    i :: Int = 123;
+    k :: float = 3.3
+    m :: string = "abc"
+}
+

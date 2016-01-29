@@ -1,0 +1,9 @@
+﻿
+agent A {
+    loop {
+        in abc;
+        out abc
+    }
+
+}
+

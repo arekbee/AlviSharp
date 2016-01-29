@@ -1,0 +1,9 @@
+﻿
+agent A {
+     i :: Int = 123
+    loop {}
+
+    if (i /= 1 ) {
+        out p
+    }
+}
