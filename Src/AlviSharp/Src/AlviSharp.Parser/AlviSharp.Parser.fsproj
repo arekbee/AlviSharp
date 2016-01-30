@@ -15,8 +15,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ConsolePause>false</ConsolePause>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <CustomCommands>
       <CustomCommands>
         <Command type="BeforeExecute" />
@@ -27,13 +26,11 @@
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ConsolePause>false</ConsolePause>
     <GenerateTailCalls>true</GenerateTailCalls>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -41,15 +38,30 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="FsLexYacc.Runtime">
+      <HintPath>..\..\packages\FsLexYacc.Runtime.6.1.0\lib\net40\FsLexYacc.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.PowerPack">
+      <HintPath>..\..\Libs\FSharp.PowerPack\FSharp.PowerPack.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlvisSpec.fs" />
-    <None Include="AlvisLexer.fsl" />
-    <None Include="AlvisParser.fsp" />
+    <FsYacc Include="AlvisParser.fsp">
+      <OtherFlags>--module AlvisParser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="AlvisLexer.fsl">
+      <OtherFlags>--unicode</OtherFlags>
+    </FsLex>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Script.fsx" />
+    <None Include="packages.config" />
+    <Compile Include="AlvisParser.fsi" />
+    <Compile Include="AlvisParser.fs" />
+    <Compile Include="AlvisLexer.fs" />
     <Compile Include="Component1.fs" />
+    <Compile Include="Script.fsx" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <Import Project="..\..\packages\FsLexYacc.6.1.0\build\FsLexYacc.targets" Condition="Exists('..\..\packages\FsLexYacc.6.1.0\build\FsLexYacc.targets')" />
   <ItemGroup />
 </Project>
