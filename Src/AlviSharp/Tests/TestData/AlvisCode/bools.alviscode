@@ -1,0 +1,6 @@
+﻿
+agent A {
+    i :: Bool = true;
+    k :: Bool = false
+}
+

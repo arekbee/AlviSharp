@@ -4,7 +4,7 @@ type ValueType =
     | Int of int  
     | Float of float  
     | String of string 
-
+    | Bool of bool
 
 type ValueName = {
     Value : ValueType;

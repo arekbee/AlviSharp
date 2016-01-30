@@ -95,79 +95,79 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 41 "AlvisLexer.fsl"
+# 42 "AlvisLexer.fsl"
                                  tokenize lexbuf 
 # 100 "AlvisLexer.fs"
           )
   | 1 -> ( 
-# 42 "AlvisLexer.fsl"
+# 43 "AlvisLexer.fsl"
                                  lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; 
 # 105 "AlvisLexer.fs"
           )
   | 2 -> ( 
-# 43 "AlvisLexer.fsl"
+# 44 "AlvisLexer.fsl"
                                  INT(Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) 
 # 110 "AlvisLexer.fs"
           )
   | 3 -> ( 
-# 44 "AlvisLexer.fsl"
+# 45 "AlvisLexer.fsl"
                                  FLOAT(Double.Parse(LexBuffer<_>.LexemeString lexbuf)) 
 # 115 "AlvisLexer.fs"
           )
   | 4 -> ( 
-# 45 "AlvisLexer.fsl"
+# 46 "AlvisLexer.fsl"
                                  ops.[LexBuffer<_>.LexemeString lexbuf] 
 # 120 "AlvisLexer.fs"
           )
   | 5 -> ( 
-# 46 "AlvisLexer.fsl"
+# 47 "AlvisLexer.fsl"
                                  match keywords.TryFind(LexBuffer<_>.LexemeString lexbuf) with   
                                  | Some(token) -> token   
                                  | None -> ID(LexBuffer<_>.LexemeString lexbuf) 
 # 127 "AlvisLexer.fs"
           )
   | 6 -> ( 
-# 49 "AlvisLexer.fsl"
+# 50 "AlvisLexer.fsl"
                                  COMMA 
 # 132 "AlvisLexer.fs"
           )
   | 7 -> ( 
-# 50 "AlvisLexer.fsl"
+# 51 "AlvisLexer.fsl"
                          BRACESOPEN 
 # 137 "AlvisLexer.fs"
           )
   | 8 -> ( 
-# 51 "AlvisLexer.fsl"
+# 52 "AlvisLexer.fsl"
                          BRACESCLOSE 
 # 142 "AlvisLexer.fs"
           )
   | 9 -> ( 
-# 53 "AlvisLexer.fsl"
+# 54 "AlvisLexer.fsl"
                          PARENTHESEOPEN 
 # 147 "AlvisLexer.fs"
           )
   | 10 -> ( 
-# 54 "AlvisLexer.fsl"
+# 55 "AlvisLexer.fsl"
                          PARENTHESECLOSE 
 # 152 "AlvisLexer.fs"
           )
   | 11 -> ( 
-# 56 "AlvisLexer.fsl"
+# 57 "AlvisLexer.fsl"
                           DOUBLECOLON 
 # 157 "AlvisLexer.fs"
           )
   | 12 -> ( 
-# 57 "AlvisLexer.fsl"
+# 58 "AlvisLexer.fsl"
                          SEMICOLON 
 # 162 "AlvisLexer.fs"
           )
   | 13 -> ( 
-# 58 "AlvisLexer.fsl"
+# 59 "AlvisLexer.fsl"
                           COMMENT 
 # 167 "AlvisLexer.fs"
           )
   | 14 -> ( 
-# 59 "AlvisLexer.fsl"
+# 60 "AlvisLexer.fsl"
                                  EOF 
 # 172 "AlvisLexer.fs"
           )

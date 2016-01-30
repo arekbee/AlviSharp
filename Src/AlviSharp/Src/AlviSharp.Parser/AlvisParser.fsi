@@ -27,6 +27,7 @@ type token =
   | PORT
   | IN
   | OUT
+  | BOOL of (bool)
   | FLOAT of (float)
   | INT of (int)
   | ID of (string)
@@ -57,6 +58,7 @@ type tokenId =
     | TOKEN_PORT
     | TOKEN_IN
     | TOKEN_OUT
+    | TOKEN_BOOL
     | TOKEN_FLOAT
     | TOKEN_INT
     | TOKEN_ID

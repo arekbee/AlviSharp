@@ -36,7 +36,8 @@ let identifier  = char(char|digit|['-' '_' '.'])*
 let whitespace  = [' ' '\t']   
 let newline     = "\n\r" | '\n' | '\r' | "\r\n" 
 let operator    = ">" | ">=" | "<" | "<=" | "=" | "/="  
- 
+let bools 		= "true" | "false"
+
 rule tokenize = parse   
 | whitespace    { tokenize lexbuf }   
 | newline       { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; }   
