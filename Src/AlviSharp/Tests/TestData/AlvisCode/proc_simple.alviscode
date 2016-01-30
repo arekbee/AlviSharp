@@ -1,0 +1,4 @@
+agent Buffer {
+  i :: Int = 0;
+  proc pop  {  }
+}

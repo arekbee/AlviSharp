@@ -45,6 +45,15 @@ namespace AlviSharp.Parser.ITests
 				return Directory.GetFiles(TestPath).Where(x => x.EndsWith(FileExtension)).Select(x => new TestCaseData(x));
 			}
 		}
+
+
+		[Test]
+		public void TestSingle()
+		{
+			string filePath = Directory.GetFiles (TestPath).First (x => Path.GetFileNameWithoutExtension (x) == "proc_simple");
+			var content = File.ReadAllText(filePath);
+			var parsed = AlviSharp.Parser.Program.ParseAlvis(content);
+		}
 	}
 
 

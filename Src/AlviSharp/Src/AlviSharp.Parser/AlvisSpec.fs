@@ -40,14 +40,14 @@ and ConditionBody ={
 
 type Proc = {
     Condition : Guard option;
-    Port : Port * ValueType;
+    Port :  string;
     ProcBody : ConditionBody
 }
 
 
 
 type  Agent = {
-    //Proc : Proc list;
+    Proc : Proc list;
     Values : ValueName list;
     Looping : Loop option;
     Ports : Port list ;

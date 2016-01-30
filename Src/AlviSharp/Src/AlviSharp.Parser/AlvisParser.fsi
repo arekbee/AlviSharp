@@ -70,6 +70,8 @@ type nonTerminalId =
     | NONTERM_alvisStatements
     | NONTERM_alvisStatement
     | NONTERM_agentBody
+    | NONTERM_procList
+    | NONTERM_procClause
     | NONTERM_conditionClause
     | NONTERM_conditionIfElseClause
     | NONTERM_conditionIfClause

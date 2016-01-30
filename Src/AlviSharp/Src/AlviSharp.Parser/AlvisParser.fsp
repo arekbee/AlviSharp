@@ -35,9 +35,19 @@ alvisStatement:
 
     
 agentBody:
-    | valueList portList  loopClause conditionClause           { {Null = false; Values = $1; Ports = $2;  Looping = $3; Condition = $4}}
-    | NULL                                                      { {Null = true;  Values = []; Ports = [];  Looping = None; Condition  = []}}
+    | valueList portList  loopClause conditionClause procList          { {Null = false; Values = $1; Ports = $2;  Looping = $3; Condition = $4; Proc=$5}}
+    | NULL                                                      { {Null = true;  Values = []; Ports = [];  Looping = None; Condition  = []; Proc=[]}}
 
+
+procList:
+    | {[]}
+    | procClause {[$1]}
+    | procClause procList {$1 :: $2}
+
+
+procClause:
+    | PROC PARENTHESEOPEN guardClause PARENTHESECLOSE ID BRACESOPEN conditionBody BRACESCLOSE {{Condition = Some($3); Port=$5; ProcBody=$7}}
+    | PROC ID BRACESOPEN conditionBody BRACESCLOSE                                            {{Condition = None    ;   Port=$2; ProcBody=$4}}
 
 
 conditionClause:
@@ -51,7 +61,7 @@ conditionIfElseClause:
 
 conditionIfClause:
     | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE  {{Guard=$3; ConditionBody=$6; ElseConditionBody=None}}
-    | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE ELSE BRACESOPEN conditionBody BRACESCLOSE{{Guard=$3; ConditionBody=$6; ElseConditionBody=Some($10)}}
+    | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE ELSE BRACESOPEN conditionBody BRACESCLOSE  {{Guard=$3; ConditionBody=$6; ElseConditionBody=Some($10)}}
 
 guardClause:
     | {Const(true)}
