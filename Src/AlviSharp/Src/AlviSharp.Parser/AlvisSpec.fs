@@ -36,6 +36,7 @@ and ConditionBody ={
     Looping : Loop option;
     Ports : Port list ;
     Condition : Condition list;
+    EXIT : bool;
 }
 
 type Proc = {
