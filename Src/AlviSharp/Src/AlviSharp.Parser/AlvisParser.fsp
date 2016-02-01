@@ -68,7 +68,9 @@ guardClause:
     | value op value { Cond($1,$2,$3)}
 
 conditionBody:
-    | portList  loopClause conditionClause            { { Ports = $1;  Looping = $2; Condition = $3}}
+    | portList  loopClause conditionClause    nextLine              { { Ports = $1;  Looping = $2; Condition = $3; Exit=false}}
+    | portList  loopClause conditionClause EXIT    nextLine         { { Ports = $1;  Looping = $2; Condition = $3; Exit=true}}
+    
 
 
 loopClause:
