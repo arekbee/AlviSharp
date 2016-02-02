@@ -12,7 +12,7 @@ agent A {
       }
     }
     select {
-      alt(i == 1) {
+      alt (i == 1) {
         out p;
       }    
     }  

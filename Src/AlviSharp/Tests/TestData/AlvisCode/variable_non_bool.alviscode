@@ -1,6 +1,6 @@
 agent Variable {
-    i :: INT  = 0;
-    j :: INT = 1;
-	f :: FLOAT = 0.0;
-	g :: FLOAT = 1.0
+    i :: int  = 0;
+    j :: int = 1;
+	f :: float = 0.0;
+	g :: float = 1.0;
 }

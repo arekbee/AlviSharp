@@ -6,7 +6,7 @@
 
 agent Buffer {
     i :: Int  = 0;
-    proc (i &gt;= 0) put {
+    proc (i >= 0) put {
     in put;
     i = 1;
     }
