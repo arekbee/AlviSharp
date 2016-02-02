@@ -1,4 +1,4 @@
-﻿{   
+{   
 module AlvisLexer
 open System   
 open AlvisParser   
@@ -15,6 +15,8 @@ let keywords =
         "exit", EXIT;
         "if", IF; 
         "else", ELSE;
+        "select", SELECT;
+        "alt", ALT;
     ] |> Map.ofList     
  
 let ops =   
@@ -36,8 +38,7 @@ let identifier  = char(char|digit|['-' '_' '.'])*
 let whitespace  = [' ' '\t']   
 let newline     = "\n\r" | '\n' | '\r' | "\r\n" 
 let operator    = ">" | ">=" | "<" | "<=" | "=" | "/="  
-let bools 		= "true" | "false"
-
+ 
 rule tokenize = parse   
 | whitespace    { tokenize lexbuf }   
 | newline       { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; }   
