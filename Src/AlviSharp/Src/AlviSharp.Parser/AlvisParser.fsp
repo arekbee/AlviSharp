@@ -4,13 +4,11 @@ open AlvisSpec
  
 %token <string> ID   
 %token <int> INT   
-%token <float> FLOAT
-%token <bool> BOOL
-   
+%token <float> FLOAT   
 
 
 %token PORT IN OUT 
-%token PROC NULL LOOP EXIT SELECT  IF ELSE
+%token PROC NULL LOOP EXIT SELECT ALT  IF ELSE
 
 %token EOF   
 %token BRACESOPEN BRACESCLOSE PARENTHESEOPEN PARENTHESECLOSE COMMA DOUBLECOLON SEMICOLON COMMENT
@@ -24,6 +22,11 @@ open AlvisSpec
  
 %%   
  
+
+op: EQ { Eq } | LT { Lt } | LE { Le } | GT { Gt } | GE { Ge }  | NE {Ne}
+
+
+
 start:  alvisStatements EOF {$1}
 
 alvisStatements:
@@ -35,25 +38,30 @@ alvisStatement:
 
     
 agentBody:
-    | valueList portList  loopClause conditionClause procList          { {Null = false; Values = $1; Ports = $2;  Looping = $3; Condition = $4; Proc=$5}}
+    | valueList portList  loopClause conditionList   procList        { {Null = false; Values = $1; Ports = $2;  Looping = $3; Condition = $4; Proc=$5}}
     | NULL                                                      { {Null = true;  Values = []; Ports = [];  Looping = None; Condition  = []; Proc=[]}}
 
 
 procList:
     | {[]}
     | procClause {[$1]}
-    | procClause procList {$1 :: $2}
+    | procClause procList { $1 :: $2 }
+
+
 
 
 procClause:
-    | PROC PARENTHESEOPEN guardClause PARENTHESECLOSE ID BRACESOPEN conditionBody BRACESCLOSE {{Condition = Some($3); Port=$5; ProcBody=$7}}
-    | PROC ID BRACESOPEN conditionBody BRACESCLOSE                                            {{Condition = None    ;   Port=$2; ProcBody=$4}}
+    | PROC ID BRACESOPEN conditionBody BRACESCLOSE  {{Condition = None; Port= $2; ProcBody=$4}}
+    | PROC PARENTHESEOPEN guardClause PARENTHESECLOSE ID BRACESOPEN conditionBody BRACESCLOSE  {{Condition = Some($3); Port= $5; ProcBody=$7}}
+
+conditionList:
+    | {[]}
+    | conditionClause {[$1]}
+    | conditionClause conditionList { $1 :: $2 }
 
 
 conditionClause:
-    | {[]}
-    | conditionIfElseClause {[$1]}
-    | conditionIfElseClause conditionClause   { $1 :: $2 }
+    | conditionIfElseClause {$1}
 
 
 conditionIfElseClause:
@@ -61,17 +69,24 @@ conditionIfElseClause:
 
 conditionIfClause:
     | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE  {{Guard=$3; ConditionBody=$6; ElseConditionBody=None}}
-    | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE ELSE BRACESOPEN conditionBody BRACESCLOSE  {{Guard=$3; ConditionBody=$6; ElseConditionBody=Some($10)}}
+    | IF PARENTHESEOPEN guardClause PARENTHESECLOSE  BRACESOPEN conditionBody BRACESCLOSE ELSE BRACESOPEN conditionBody BRACESCLOSE{{Guard=$3; ConditionBody=$6; ElseConditionBody=Some($10)}}
 
 guardClause:
     | {Const(true)}
+    | value EQ EQ value {Cond($1,Eq, $4)}
     | value op value { Cond($1,$2,$3)}
 
 conditionBody:
-    | portList  loopClause conditionClause    nextLine              { { Ports = $1;  Looping = $2; Condition = $3; Exit=false}}
-    | portList  loopClause conditionClause EXIT    nextLine         { { Ports = $1;  Looping = $2; Condition = $3; Exit=true}}
-    
+    | portList  loopClause conditionList  assignList EXIT   nextLine      { { Ports = $1;  Looping = $2; Condition = $3; Assign=$4; Exit= true}}
+    | portList  loopClause conditionList  assignList  nextLine     { { Ports = $1;  Looping = $2; Condition = $3; Assign=$4;  Exit= false}}
 
+assignList:
+    | {[]}
+    | assignClause {[$1]}
+    | assignClause assignList {$1 :: $2}
+
+assignClause:
+    | ID EQ value nextLine {{Name=$1; Value=$3}}
 
 loopClause:
     | {None}
@@ -86,7 +101,7 @@ loopBody:
 
 valueList:
     |   {[]}
-    | valueClause {[$1]}
+    | valueClause nextLine {[$1]}
     | valueList  nextLine valueClause { $3::$1 }
 
 
@@ -94,18 +109,16 @@ valueClause:
     | ID DOUBLECOLON valueType { {Name = $1; Value = $3 }}
 
 valueType:   
-    | ID EQ value                              { $3 }   
+    | ID EQ  value                              { $3 }   
 
 
 value:   
     | INT                   { Int($1) }   
     | FLOAT                 { Float($1) }   
-    | ID                    { String($1) } 
-    | BOOL 					{ Bool($1)}  
+    | ID                    { String($1) }   
 
 
 
-op: EQ { Eq } | LT { Lt } | LE { Le } | GT { Gt } | GE { Ge }  | NE {Ne}
 
 agentList:   
     | ID                    { [$1]}   
@@ -120,6 +133,8 @@ portList:
     |       { [] }   
     | portClause nextLine {[$1]}
     | portList  portClause nextLine   {$2 :: $1}
+
+
 
 portClause:
     | IN  ID    { In($2)}
