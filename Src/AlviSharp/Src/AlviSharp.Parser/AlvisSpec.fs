@@ -1,10 +1,10 @@
-﻿module AlvisSpec
+module AlvisSpec
 
 type ValueType =   
     | Int of int  
     | Float of float  
     | String of string 
-    | Bool of bool
+
 
 type ValueName = {
     Value : ValueType;
@@ -21,6 +21,15 @@ type Guard =
     | Const of bool
 
 
+type Assign =   ValueName
+
+
+type Alt =   Condition
+
+type SelectStatement = {
+    Alt : Alt list;
+}
+
 type Loop = {
         Ports : Port list ;
         Exit : bool;
@@ -36,12 +45,13 @@ and ConditionBody ={
     Looping : Loop option;
     Ports : Port list ;
     Condition : Condition list;
-    EXIT : bool;
+    Assign : Assign list;
+    Exit : bool;
 }
 
 type Proc = {
     Condition : Guard option;
-    Port :  string;
+    Port : string;
     ProcBody : ConditionBody
 }
 
@@ -64,7 +74,7 @@ type AlvisStatement = {
         AgentBody :  Agent;
 }
 
-type  Agents =  AlvisStatement list
+  type  Agents =  AlvisStatement list
 
 
 
