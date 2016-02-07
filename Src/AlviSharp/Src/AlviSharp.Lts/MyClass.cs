@@ -114,6 +114,7 @@ namespace AlviSharp.Lts
 				foreach (var agentName in item.AgentList.ToEnumerable ()) {
 					bool isActive = project.Page.Agents.First (x => x.Name == agentName).Active;
 
+					item.AgentBody.Proc.Select (x=>x.Condition.
 
 
 					states.Add(new SingleAgentState { AgentName = agentName, IsActive = isActive});
