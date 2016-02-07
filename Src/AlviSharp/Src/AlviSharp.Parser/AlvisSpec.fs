@@ -14,7 +14,9 @@ type ValueName = {
      
 type Op = Eq | Gt | Ge | Lt | Le | Ne   // = > >= <  <= /=
 
-type Port = In of string | Out of string
+type Port = 
+    | In of string * ValueType option
+    | Out of string * ValueType option
 
 type Guard =
     | Cond of (ValueType * Op * ValueType) 
@@ -24,18 +26,16 @@ type Guard =
 type Assign =   ValueName
 
 
-type Alt =   Condition
 
-type SelectStatement = {
-    Alt : Alt list;
-}
 
 type Loop = {
         Ports : Port list ;
         Exit : bool;
+        Select : SelectStatement list;
+        Condition : Condition list;
 }
 
-type  Condition = {
+and  Condition = {
         Guard : Guard;
         ConditionBody :  ConditionBody;
         ElseConditionBody :  ConditionBody option;
@@ -47,12 +47,19 @@ and ConditionBody ={
     Condition : Condition list;
     Assign : Assign list;
     Exit : bool;
+    Null : bool;
+}
+
+and Alt =   Condition
+
+and SelectStatement = {
+    Alt : Alt list;
 }
 
 type Proc = {
     Condition : Guard option;
     Port : string;
-    ProcBody : ConditionBody
+    ProcBody : ConditionBody;
 }
 
 

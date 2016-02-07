@@ -31,12 +31,12 @@ type token =
   | LOOP
   | EXIT
   | SELECT
+  | ALT
   | IF
   | ELSE
   | PORT
   | IN
   | OUT
-  | BOOL of (bool)
   | FLOAT of (float)
   | INT of (int)
   | ID of (string)
@@ -63,12 +63,12 @@ type tokenId =
     | TOKEN_LOOP
     | TOKEN_EXIT
     | TOKEN_SELECT
+    | TOKEN_ALT
     | TOKEN_IF
     | TOKEN_ELSE
     | TOKEN_PORT
     | TOKEN_IN
     | TOKEN_OUT
-    | TOKEN_BOOL
     | TOKEN_FLOAT
     | TOKEN_INT
     | TOKEN_ID
@@ -77,28 +77,37 @@ type tokenId =
 // This type is used to give symbolic names to token indexes, useful for error messages
 type nonTerminalId = 
     | NONTERM__startstart
+    | NONTERM_op
     | NONTERM_start
-    | NONTERM_alvisStatements
-    | NONTERM_alvisStatement
     | NONTERM_agentBody
-    | NONTERM_procList
+    | NONTERM_selectClause
+    | NONTERM_altClause
     | NONTERM_procClause
     | NONTERM_conditionClause
     | NONTERM_conditionIfElseClause
     | NONTERM_conditionIfClause
-    | NONTERM_guardClause
     | NONTERM_conditionBody
     | NONTERM_loopClause
     | NONTERM_loopBody
-    | NONTERM_valueList
+    | NONTERM_alvisStatement
+    | NONTERM_guardClause
+    | NONTERM_portClause
+    | NONTERM_nextLine
     | NONTERM_valueClause
     | NONTERM_valueType
     | NONTERM_value
-    | NONTERM_op
+    | NONTERM_assignClause
+    | NONTERM_nullClause
+    | NONTERM_exitClause
+    | NONTERM_alvisAgentsList
     | NONTERM_agentList
-    | NONTERM_nextLine
+    | NONTERM_assignList
     | NONTERM_portList
-    | NONTERM_portClause
+    | NONTERM_valueList
+    | NONTERM_procList
+    | NONTERM_selectList
+    | NONTERM_altList
+    | NONTERM_conditionList
 
 // This function maps tokens to integer indexes
 let tagOfToken (t:token) = 
@@ -124,12 +133,12 @@ let tagOfToken (t:token) =
   | LOOP  -> 18 
   | EXIT  -> 19 
   | SELECT  -> 20 
-  | IF  -> 21 
-  | ELSE  -> 22 
-  | PORT  -> 23 
-  | IN  -> 24 
-  | OUT  -> 25 
-  | BOOL _ -> 26 
+  | ALT  -> 21 
+  | IF  -> 22 
+  | ELSE  -> 23 
+  | PORT  -> 24 
+  | IN  -> 25 
+  | OUT  -> 26 
   | FLOAT _ -> 27 
   | INT _ -> 28 
   | ID _ -> 29 
@@ -158,12 +167,12 @@ let tokenTagToTokenId (tokenIdx:int) =
   | 18 -> TOKEN_LOOP 
   | 19 -> TOKEN_EXIT 
   | 20 -> TOKEN_SELECT 
-  | 21 -> TOKEN_IF 
-  | 22 -> TOKEN_ELSE 
-  | 23 -> TOKEN_PORT 
-  | 24 -> TOKEN_IN 
-  | 25 -> TOKEN_OUT 
-  | 26 -> TOKEN_BOOL 
+  | 21 -> TOKEN_ALT 
+  | 22 -> TOKEN_IF 
+  | 23 -> TOKEN_ELSE 
+  | 24 -> TOKEN_PORT 
+  | 25 -> TOKEN_IN 
+  | 26 -> TOKEN_OUT 
   | 27 -> TOKEN_FLOAT 
   | 28 -> TOKEN_INT 
   | 29 -> TOKEN_ID 
@@ -175,58 +184,76 @@ let tokenTagToTokenId (tokenIdx:int) =
 let prodIdxToNonTerminal (prodIdx:int) = 
   match prodIdx with
     | 0 -> NONTERM__startstart 
-    | 1 -> NONTERM_start 
-    | 2 -> NONTERM_alvisStatements 
-    | 3 -> NONTERM_alvisStatements 
-    | 4 -> NONTERM_alvisStatement 
-    | 5 -> NONTERM_agentBody 
-    | 6 -> NONTERM_agentBody 
-    | 7 -> NONTERM_procList 
-    | 8 -> NONTERM_procList 
-    | 9 -> NONTERM_procList 
-    | 10 -> NONTERM_procClause 
-    | 11 -> NONTERM_procClause 
-    | 12 -> NONTERM_conditionClause 
-    | 13 -> NONTERM_conditionClause 
+    | 1 -> NONTERM_op 
+    | 2 -> NONTERM_op 
+    | 3 -> NONTERM_op 
+    | 4 -> NONTERM_op 
+    | 5 -> NONTERM_op 
+    | 6 -> NONTERM_op 
+    | 7 -> NONTERM_start 
+    | 8 -> NONTERM_agentBody 
+    | 9 -> NONTERM_agentBody 
+    | 10 -> NONTERM_selectClause 
+    | 11 -> NONTERM_altClause 
+    | 12 -> NONTERM_procClause 
+    | 13 -> NONTERM_procClause 
     | 14 -> NONTERM_conditionClause 
     | 15 -> NONTERM_conditionIfElseClause 
     | 16 -> NONTERM_conditionIfClause 
     | 17 -> NONTERM_conditionIfClause 
-    | 18 -> NONTERM_guardClause 
-    | 19 -> NONTERM_guardClause 
-    | 20 -> NONTERM_conditionBody 
+    | 18 -> NONTERM_conditionBody 
+    | 19 -> NONTERM_loopClause 
+    | 20 -> NONTERM_loopClause 
     | 21 -> NONTERM_loopClause 
     | 22 -> NONTERM_loopClause 
-    | 23 -> NONTERM_loopClause 
-    | 24 -> NONTERM_loopClause 
+    | 23 -> NONTERM_loopBody 
+    | 24 -> NONTERM_loopBody 
     | 25 -> NONTERM_loopBody 
-    | 26 -> NONTERM_loopBody 
-    | 27 -> NONTERM_loopBody 
-    | 28 -> NONTERM_valueList 
-    | 29 -> NONTERM_valueList 
-    | 30 -> NONTERM_valueList 
-    | 31 -> NONTERM_valueClause 
-    | 32 -> NONTERM_valueType 
-    | 33 -> NONTERM_value 
-    | 34 -> NONTERM_value 
-    | 35 -> NONTERM_value 
-    | 36 -> NONTERM_value 
-    | 37 -> NONTERM_op 
-    | 38 -> NONTERM_op 
-    | 39 -> NONTERM_op 
-    | 40 -> NONTERM_op 
-    | 41 -> NONTERM_op 
-    | 42 -> NONTERM_op 
-    | 43 -> NONTERM_agentList 
-    | 44 -> NONTERM_agentList 
-    | 45 -> NONTERM_nextLine 
-    | 46 -> NONTERM_nextLine 
-    | 47 -> NONTERM_nextLine 
-    | 48 -> NONTERM_portList 
-    | 49 -> NONTERM_portList 
-    | 50 -> NONTERM_portList 
-    | 51 -> NONTERM_portClause 
-    | 52 -> NONTERM_portClause 
+    | 26 -> NONTERM_alvisStatement 
+    | 27 -> NONTERM_guardClause 
+    | 28 -> NONTERM_guardClause 
+    | 29 -> NONTERM_guardClause 
+    | 30 -> NONTERM_portClause 
+    | 31 -> NONTERM_portClause 
+    | 32 -> NONTERM_portClause 
+    | 33 -> NONTERM_portClause 
+    | 34 -> NONTERM_nextLine 
+    | 35 -> NONTERM_nextLine 
+    | 36 -> NONTERM_nextLine 
+    | 37 -> NONTERM_valueClause 
+    | 38 -> NONTERM_valueType 
+    | 39 -> NONTERM_value 
+    | 40 -> NONTERM_value 
+    | 41 -> NONTERM_value 
+    | 42 -> NONTERM_assignClause 
+    | 43 -> NONTERM_nullClause 
+    | 44 -> NONTERM_nullClause 
+    | 45 -> NONTERM_exitClause 
+    | 46 -> NONTERM_exitClause 
+    | 47 -> NONTERM_alvisAgentsList 
+    | 48 -> NONTERM_alvisAgentsList 
+    | 49 -> NONTERM_agentList 
+    | 50 -> NONTERM_agentList 
+    | 51 -> NONTERM_assignList 
+    | 52 -> NONTERM_assignList 
+    | 53 -> NONTERM_assignList 
+    | 54 -> NONTERM_portList 
+    | 55 -> NONTERM_portList 
+    | 56 -> NONTERM_portList 
+    | 57 -> NONTERM_valueList 
+    | 58 -> NONTERM_valueList 
+    | 59 -> NONTERM_valueList 
+    | 60 -> NONTERM_procList 
+    | 61 -> NONTERM_procList 
+    | 62 -> NONTERM_procList 
+    | 63 -> NONTERM_selectList 
+    | 64 -> NONTERM_selectList 
+    | 65 -> NONTERM_selectList 
+    | 66 -> NONTERM_altList 
+    | 67 -> NONTERM_altList 
+    | 68 -> NONTERM_conditionList 
+    | 69 -> NONTERM_conditionList 
+    | 70 -> NONTERM_conditionList 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
 let _fsyacc_endOfInputTag = 32 
@@ -256,12 +283,12 @@ let token_to_string (t:token) =
   | LOOP  -> "LOOP" 
   | EXIT  -> "EXIT" 
   | SELECT  -> "SELECT" 
+  | ALT  -> "ALT" 
   | IF  -> "IF" 
   | ELSE  -> "ELSE" 
   | PORT  -> "PORT" 
   | IN  -> "IN" 
   | OUT  -> "OUT" 
-  | BOOL _ -> "BOOL" 
   | FLOAT _ -> "FLOAT" 
   | INT _ -> "INT" 
   | ID _ -> "ID" 
@@ -290,27 +317,27 @@ let _fsyacc_dataOfToken (t:token) =
   | LOOP  -> (null : System.Object) 
   | EXIT  -> (null : System.Object) 
   | SELECT  -> (null : System.Object) 
+  | ALT  -> (null : System.Object) 
   | IF  -> (null : System.Object) 
   | ELSE  -> (null : System.Object) 
   | PORT  -> (null : System.Object) 
   | IN  -> (null : System.Object) 
   | OUT  -> (null : System.Object) 
-  | BOOL _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | FLOAT _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | INT _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | ID _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 0us; 1us; 2us; 65535us; 0us; 2us; 4us; 5us; 2us; 65535us; 0us; 4us; 4us; 4us; 1us; 65535us; 8us; 9us; 2us; 65535us; 14us; 15us; 17us; 18us; 2us; 65535us; 14us; 17us; 17us; 17us; 3us; 65535us; 13us; 14us; 31us; 32us; 49us; 50us; 3us; 65535us; 13us; 31us; 31us; 31us; 49us; 31us; 3us; 65535us; 13us; 33us; 31us; 33us; 49us; 33us; 2us; 65535us; 20us; 21us; 35us; 36us; 4us; 65535us; 24us; 25us; 28us; 29us; 38us; 39us; 42us; 43us; 2us; 65535us; 12us; 13us; 48us; 49us; 1us; 65535us; 52us; 54us; 1us; 65535us; 8us; 11us; 2us; 65535us; 8us; 59us; 60us; 61us; 1us; 65535us; 63us; 64us; 4us; 65535us; 20us; 45us; 35us; 45us; 46us; 47us; 66us; 67us; 1us; 65535us; 45us; 46us; 1us; 65535us; 6us; 7us; 4us; 65535us; 11us; 60us; 56us; 57us; 83us; 84us; 85us; 86us; 6us; 65535us; 11us; 12us; 24us; 48us; 28us; 48us; 38us; 48us; 42us; 48us; 52us; 58us; 9us; 65535us; 11us; 83us; 12us; 85us; 24us; 83us; 28us; 83us; 38us; 83us; 42us; 83us; 48us; 85us; 52us; 83us; 58us; 85us; |]
-let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 3us; 6us; 9us; 11us; 14us; 17us; 21us; 25us; 29us; 32us; 37us; 40us; 42us; 44us; 47us; 49us; 54us; 56us; 58us; 63us; 70us; |]
-let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 1us; 1us; 1us; 1us; 2us; 2us; 3us; 1us; 3us; 1us; 4us; 2us; 4us; 44us; 1us; 4us; 1us; 4us; 1us; 4us; 2us; 5us; 30us; 2us; 5us; 50us; 1us; 5us; 1us; 5us; 1us; 5us; 1us; 6us; 2us; 8us; 9us; 1us; 9us; 2us; 10us; 11us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 11us; 1us; 11us; 1us; 11us; 1us; 11us; 2us; 13us; 14us; 1us; 14us; 1us; 15us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 1us; 17us; 1us; 17us; 1us; 17us; 1us; 17us; 1us; 19us; 1us; 19us; 1us; 19us; 2us; 20us; 50us; 1us; 20us; 1us; 20us; 3us; 22us; 23us; 24us; 2us; 23us; 24us; 1us; 23us; 1us; 24us; 1us; 24us; 1us; 26us; 1us; 26us; 2us; 27us; 50us; 1us; 29us; 1us; 30us; 1us; 30us; 1us; 31us; 1us; 31us; 1us; 31us; 1us; 32us; 1us; 32us; 1us; 32us; 1us; 33us; 1us; 34us; 1us; 35us; 1us; 36us; 1us; 37us; 1us; 38us; 1us; 39us; 1us; 40us; 1us; 41us; 1us; 42us; 1us; 43us; 1us; 44us; 1us; 44us; 2us; 46us; 47us; 1us; 47us; 1us; 49us; 1us; 49us; 1us; 50us; 1us; 50us; 1us; 51us; 1us; 51us; 1us; 52us; 1us; 52us; |]
-let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 6us; 8us; 11us; 13us; 15us; 18us; 20us; 22us; 24us; 27us; 30us; 32us; 34us; 36us; 38us; 41us; 43us; 46us; 48us; 50us; 52us; 54us; 56us; 58us; 60us; 62us; 64us; 66us; 68us; 71us; 73us; 75us; 78us; 81us; 84us; 87us; 90us; 93us; 96us; 98us; 100us; 102us; 104us; 106us; 108us; 110us; 113us; 115us; 117us; 121us; 124us; 126us; 128us; 130us; 132us; 134us; 137us; 139us; 141us; 143us; 145us; 147us; 149us; 151us; 153us; 155us; 157us; 159us; 161us; 163us; 165us; 167us; 169us; 171us; 173us; 175us; 177us; 179us; 181us; 184us; 186us; 188us; 190us; 192us; 194us; 196us; 198us; 200us; |]
-let _fsyacc_action_rows = 91
-let _fsyacc_actionTableElements = [|1us; 32768us; 0us; 6us; 0us; 49152us; 1us; 32768us; 15us; 3us; 0us; 16385us; 1us; 16386us; 0us; 6us; 0us; 16387us; 1us; 32768us; 29us; 78us; 2us; 32768us; 7us; 8us; 11us; 79us; 2us; 16412us; 17us; 16us; 29us; 62us; 1us; 32768us; 8us; 10us; 0us; 16388us; 7us; 16429us; 8us; 16432us; 13us; 81us; 16us; 16432us; 18us; 16432us; 21us; 16432us; 24us; 87us; 25us; 89us; 3us; 16405us; 18us; 51us; 24us; 87us; 25us; 89us; 1us; 16396us; 21us; 34us; 1us; 16391us; 16us; 19us; 0us; 16389us; 0us; 16390us; 1us; 16391us; 16us; 19us; 0us; 16393us; 2us; 32768us; 9us; 20us; 29us; 27us; 4us; 16402us; 26us; 71us; 27us; 69us; 28us; 68us; 29us; 70us; 1us; 32768us; 10us; 22us; 1us; 32768us; 29us; 23us; 1us; 32768us; 7us; 24us; 2us; 16432us; 24us; 87us; 25us; 89us; 1us; 32768us; 8us; 26us; 0us; 16394us; 1us; 32768us; 7us; 28us; 2us; 16432us; 24us; 87us; 25us; 89us; 1us; 32768us; 8us; 30us; 0us; 16395us; 1us; 16396us; 21us; 34us; 0us; 16398us; 0us; 16399us; 1us; 32768us; 9us; 35us; 4us; 16402us; 26us; 71us; 27us; 69us; 28us; 68us; 29us; 70us; 1us; 32768us; 10us; 37us; 1us; 32768us; 7us; 38us; 2us; 16432us; 24us; 87us; 25us; 89us; 1us; 32768us; 8us; 40us; 1us; 16400us; 22us; 41us; 1us; 32768us; 7us; 42us; 2us; 16432us; 24us; 87us; 25us; 89us; 1us; 32768us; 8us; 44us; 0us; 16401us; 6us; 32768us; 1us; 72us; 2us; 73us; 3us; 74us; 4us; 75us; 5us; 76us; 6us; 77us; 4us; 32768us; 26us; 71us; 27us; 69us; 28us; 68us; 29us; 70us; 0us; 16403us; 3us; 16405us; 18us; 51us; 24us; 87us; 25us; 89us; 1us; 16396us; 21us; 34us; 0us; 16404us; 1us; 16406us; 7us; 52us; 4us; 16409us; 8us; 53us; 19us; 56us; 24us; 87us; 25us; 89us; 0us; 16407us; 1us; 32768us; 8us; 55us; 0us; 16408us; 1us; 16429us; 13us; 81us; 0us; 16410us; 2us; 16411us; 24us; 87us; 25us; 89us; 0us; 16413us; 1us; 32768us; 29us; 62us; 0us; 16414us; 1us; 32768us; 12us; 63us; 1us; 32768us; 29us; 65us; 0us; 16415us; 1us; 32768us; 1us; 66us; 4us; 32768us; 26us; 71us; 27us; 69us; 28us; 68us; 29us; 70us; 0us; 16416us; 0us; 16417us; 0us; 16418us; 0us; 16419us; 0us; 16420us; 0us; 16421us; 0us; 16422us; 0us; 16423us; 0us; 16424us; 0us; 16425us; 0us; 16426us; 0us; 16427us; 1us; 32768us; 29us; 80us; 0us; 16428us; 1us; 16430us; 14us; 82us; 0us; 16431us; 1us; 16429us; 13us; 81us; 0us; 16433us; 1us; 16429us; 13us; 81us; 0us; 16434us; 1us; 32768us; 29us; 88us; 0us; 16435us; 1us; 32768us; 29us; 90us; 0us; 16436us; |]
-let _fsyacc_actionTableRowOffsets = [|0us; 2us; 3us; 5us; 6us; 8us; 9us; 11us; 14us; 17us; 19us; 20us; 28us; 32us; 34us; 36us; 37us; 38us; 40us; 41us; 44us; 49us; 51us; 53us; 55us; 58us; 60us; 61us; 63us; 66us; 68us; 69us; 71us; 72us; 73us; 75us; 80us; 82us; 84us; 87us; 89us; 91us; 93us; 96us; 98us; 99us; 106us; 111us; 112us; 116us; 118us; 119us; 121us; 126us; 127us; 129us; 130us; 132us; 133us; 136us; 137us; 139us; 140us; 142us; 144us; 145us; 147us; 152us; 153us; 154us; 155us; 156us; 157us; 158us; 159us; 160us; 161us; 162us; 163us; 164us; 166us; 167us; 169us; 170us; 172us; 173us; 175us; 176us; 178us; 179us; 181us; |]
-let _fsyacc_reductionSymbolCounts = [|1us; 2us; 1us; 2us; 5us; 5us; 1us; 0us; 1us; 2us; 8us; 5us; 0us; 1us; 2us; 1us; 7us; 11us; 0us; 3us; 3us; 0us; 1us; 3us; 4us; 0us; 2us; 1us; 0us; 1us; 3us; 3us; 3us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 3us; 0us; 1us; 2us; 0us; 2us; 3us; 2us; 2us; |]
-let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; 3us; 4us; 4us; 5us; 5us; 5us; 6us; 6us; 7us; 7us; 7us; 8us; 9us; 9us; 10us; 10us; 11us; 12us; 12us; 12us; 12us; 13us; 13us; 13us; 14us; 14us; 14us; 15us; 16us; 17us; 17us; 17us; 17us; 18us; 18us; 18us; 18us; 18us; 18us; 19us; 19us; 20us; 20us; 20us; 21us; 21us; 21us; 22us; 22us; |]
-let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 16385us; 65535us; 16387us; 65535us; 65535us; 65535us; 65535us; 16388us; 65535us; 65535us; 65535us; 65535us; 16389us; 16390us; 65535us; 16393us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16394us; 65535us; 65535us; 65535us; 16395us; 65535us; 16398us; 16399us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16401us; 65535us; 65535us; 16403us; 65535us; 65535us; 16404us; 65535us; 65535us; 16407us; 65535us; 16408us; 65535us; 16410us; 65535us; 16413us; 65535us; 16414us; 65535us; 65535us; 16415us; 65535us; 65535us; 16416us; 16417us; 16418us; 16419us; 16420us; 16421us; 16422us; 16423us; 16424us; 16425us; 16426us; 16427us; 65535us; 16428us; 65535us; 16431us; 65535us; 16433us; 65535us; 16434us; 65535us; 16435us; 65535us; 16436us; |]
+let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 77us; 80us; 1us; 65535us; 0us; 1us; 1us; 65535us; 74us; 75us; 2us; 65535us; 69us; 126us; 126us; 126us; 2us; 65535us; 21us; 128us; 128us; 128us; 2us; 65535us; 13us; 124us; 124us; 124us; 4us; 65535us; 12us; 130us; 57us; 130us; 70us; 130us; 130us; 130us; 4us; 65535us; 12us; 43us; 57us; 43us; 70us; 43us; 130us; 43us; 4us; 65535us; 12us; 44us; 57us; 44us; 70us; 44us; 130us; 44us; 5us; 65535us; 28us; 29us; 33us; 34us; 40us; 41us; 49us; 50us; 53us; 54us; 2us; 65535us; 11us; 12us; 56us; 57us; 1us; 65535us; 63us; 65us; 2us; 65535us; 0us; 112us; 112us; 112us; 3us; 65535us; 25us; 26us; 36us; 37us; 46us; 47us; 8us; 65535us; 10us; 119us; 28us; 119us; 33us; 119us; 40us; 119us; 49us; 119us; 53us; 119us; 63us; 119us; 119us; 119us; 12us; 65535us; 15us; 16us; 18us; 19us; 67us; 68us; 83us; 84us; 86us; 87us; 88us; 89us; 90us; 91us; 96us; 97us; 106us; 107us; 108us; 109us; 110us; 111us; 121us; 122us; 2us; 65535us; 74us; 121us; 121us; 121us; 1us; 65535us; 95us; 96us; 9us; 65535us; 25us; 77us; 36us; 77us; 46us; 77us; 78us; 79us; 80us; 81us; 83us; 88us; 86us; 90us; 99us; 100us; 105us; 106us; 2us; 65535us; 58us; 117us; 117us; 117us; 1us; 65535us; 59us; 60us; 3us; 65535us; 14us; 15us; 17us; 18us; 60us; 61us; 2us; 65535us; 0us; 8us; 112us; 113us; 2us; 65535us; 72us; 73us; 115us; 116us; 2us; 65535us; 58us; 59us; 117us; 118us; 8us; 65535us; 10us; 11us; 28us; 56us; 33us; 56us; 40us; 56us; 49us; 56us; 53us; 56us; 63us; 69us; 119us; 120us; 2us; 65535us; 74us; 10us; 121us; 123us; 2us; 65535us; 13us; 14us; 124us; 125us; 2us; 65535us; 69us; 70us; 126us; 127us; 2us; 65535us; 21us; 22us; 128us; 129us; 4us; 65535us; 12us; 13us; 57us; 58us; 70us; 71us; 130us; 131us; |]
+let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 3us; 5us; 7us; 10us; 13us; 16us; 21us; 26us; 31us; 37us; 40us; 42us; 45us; 49us; 58us; 71us; 74us; 76us; 86us; 89us; 91us; 95us; 98us; 101us; 104us; 113us; 116us; 119us; 122us; 125us; |]
+let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 2us; 1us; 28us; 1us; 2us; 1us; 3us; 1us; 4us; 1us; 5us; 1us; 6us; 1us; 7us; 1us; 7us; 1us; 8us; 1us; 8us; 1us; 8us; 1us; 8us; 1us; 8us; 1us; 8us; 1us; 8us; 1us; 9us; 1us; 9us; 1us; 9us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 10us; 1us; 11us; 1us; 11us; 1us; 11us; 1us; 11us; 1us; 11us; 1us; 11us; 1us; 11us; 2us; 12us; 13us; 1us; 12us; 1us; 12us; 1us; 12us; 1us; 12us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 13us; 1us; 14us; 1us; 15us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 2us; 16us; 17us; 1us; 17us; 1us; 17us; 1us; 17us; 1us; 17us; 1us; 18us; 1us; 18us; 1us; 18us; 1us; 18us; 1us; 18us; 1us; 18us; 3us; 20us; 21us; 22us; 2us; 21us; 22us; 1us; 21us; 1us; 22us; 1us; 22us; 1us; 24us; 1us; 24us; 1us; 25us; 1us; 25us; 1us; 25us; 1us; 26us; 1us; 26us; 1us; 26us; 1us; 26us; 1us; 26us; 2us; 28us; 29us; 1us; 28us; 1us; 28us; 1us; 29us; 1us; 29us; 2us; 30us; 32us; 2us; 30us; 32us; 1us; 30us; 2us; 31us; 33us; 2us; 31us; 33us; 1us; 31us; 1us; 32us; 1us; 32us; 1us; 33us; 1us; 33us; 2us; 35us; 36us; 1us; 36us; 1us; 37us; 1us; 37us; 1us; 37us; 1us; 37us; 1us; 38us; 1us; 38us; 1us; 38us; 1us; 39us; 1us; 40us; 1us; 41us; 1us; 42us; 1us; 42us; 1us; 42us; 1us; 42us; 1us; 44us; 1us; 44us; 1us; 46us; 1us; 46us; 2us; 47us; 48us; 1us; 48us; 2us; 49us; 50us; 1us; 50us; 1us; 50us; 2us; 52us; 53us; 1us; 53us; 2us; 55us; 56us; 1us; 56us; 2us; 58us; 59us; 1us; 58us; 1us; 59us; 2us; 61us; 62us; 1us; 62us; 2us; 64us; 65us; 1us; 65us; 2us; 66us; 67us; 1us; 67us; 2us; 69us; 70us; 1us; 70us; |]
+let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 7us; 9us; 11us; 13us; 15us; 17us; 19us; 21us; 23us; 25us; 27us; 29us; 31us; 33us; 35us; 37us; 39us; 41us; 43us; 45us; 47us; 49us; 51us; 53us; 55us; 57us; 59us; 61us; 63us; 66us; 68us; 70us; 72us; 74us; 76us; 78us; 80us; 82us; 84us; 86us; 88us; 90us; 92us; 95us; 98us; 101us; 104us; 107us; 110us; 113us; 115us; 117us; 119us; 121us; 123us; 125us; 127us; 129us; 131us; 133us; 137us; 140us; 142us; 144us; 146us; 148us; 150us; 152us; 154us; 156us; 158us; 160us; 162us; 164us; 166us; 169us; 171us; 173us; 175us; 177us; 180us; 183us; 185us; 188us; 191us; 193us; 195us; 197us; 199us; 201us; 204us; 206us; 208us; 210us; 212us; 214us; 216us; 218us; 220us; 222us; 224us; 226us; 228us; 230us; 232us; 234us; 236us; 238us; 240us; 242us; 245us; 247us; 250us; 252us; 254us; 257us; 259us; 262us; 264us; 267us; 269us; 271us; 274us; 276us; 279us; 281us; 284us; 286us; 289us; |]
+let _fsyacc_action_rows = 132
+let _fsyacc_actionTableElements = [|1us; 32768us; 0us; 72us; 0us; 49152us; 1us; 16385us; 1us; 78us; 0us; 16386us; 0us; 16387us; 0us; 16388us; 0us; 16389us; 0us; 16390us; 1us; 32768us; 15us; 9us; 0us; 16391us; 2us; 16438us; 25us; 82us; 26us; 85us; 1us; 16403us; 18us; 62us; 1us; 16452us; 22us; 45us; 1us; 16444us; 16us; 31us; 1us; 16429us; 19us; 110us; 1us; 16418us; 13us; 92us; 0us; 16392us; 1us; 16429us; 19us; 110us; 1us; 16418us; 13us; 92us; 0us; 16393us; 1us; 32768us; 7us; 21us; 1us; 32768us; 21us; 24us; 1us; 32768us; 8us; 23us; 0us; 16394us; 1us; 32768us; 9us; 25us; 3us; 16411us; 27us; 102us; 28us; 101us; 29us; 103us; 1us; 32768us; 10us; 27us; 1us; 32768us; 7us; 28us; 2us; 16438us; 25us; 82us; 26us; 85us; 1us; 32768us; 8us; 30us; 0us; 16395us; 2us; 32768us; 9us; 36us; 29us; 32us; 1us; 32768us; 7us; 33us; 2us; 16438us; 25us; 82us; 26us; 85us; 1us; 32768us; 8us; 35us; 0us; 16396us; 3us; 16411us; 27us; 102us; 28us; 101us; 29us; 103us; 1us; 32768us; 10us; 38us; 1us; 32768us; 29us; 39us; 1us; 32768us; 7us; 40us; 2us; 16438us; 25us; 82us; 26us; 85us; 1us; 32768us; 8us; 42us; 0us; 16397us; 0us; 16398us; 0us; 16399us; 1us; 32768us; 9us; 46us; 3us; 16411us; 27us; 102us; 28us; 101us; 29us; 103us; 1us; 32768us; 10us; 48us; 1us; 32768us; 7us; 49us; 2us; 16438us; 25us; 82us; 26us; 85us; 1us; 32768us; 8us; 51us; 1us; 16400us; 23us; 52us; 1us; 32768us; 7us; 53us; 2us; 16438us; 25us; 82us; 26us; 85us; 1us; 32768us; 8us; 55us; 0us; 16401us; 1us; 16403us; 18us; 62us; 1us; 16452us; 22us; 45us; 1us; 16435us; 29us; 104us; 1us; 16427us; 17us; 108us; 1us; 16429us; 19us; 110us; 0us; 16402us; 1us; 16404us; 7us; 63us; 6us; 16407us; 8us; 64us; 19us; 67us; 20us; 16438us; 22us; 16438us; 25us; 82us; 26us; 85us; 0us; 16405us; 1us; 32768us; 8us; 66us; 0us; 16406us; 1us; 16418us; 13us; 92us; 0us; 16408us; 1us; 16447us; 20us; 20us; 1us; 16452us; 22us; 45us; 0us; 16409us; 1us; 32768us; 29us; 114us; 1us; 32768us; 7us; 74us; 2us; 16441us; 17us; 17us; 29us; 94us; 1us; 32768us; 8us; 76us; 0us; 16410us; 6us; 32768us; 1us; 2us; 2us; 3us; 3us; 4us; 4us; 5us; 5us; 6us; 6us; 7us; 3us; 32768us; 27us; 102us; 28us; 101us; 29us; 103us; 0us; 16412us; 3us; 32768us; 27us; 102us; 28us; 101us; 29us; 103us; 0us; 16413us; 1us; 32768us; 29us; 83us; 4us; 16418us; 13us; 92us; 27us; 102us; 28us; 101us; 29us; 103us; 0us; 16414us; 1us; 32768us; 29us; 86us; 4us; 16418us; 13us; 92us; 27us; 102us; 28us; 101us; 29us; 103us; 0us; 16415us; 1us; 16418us; 13us; 92us; 0us; 16416us; 1us; 16418us; 13us; 92us; 0us; 16417us; 1us; 16419us; 14us; 93us; 0us; 16420us; 1us; 32768us; 12us; 95us; 1us; 32768us; 29us; 98us; 1us; 16418us; 13us; 92us; 0us; 16421us; 1us; 32768us; 1us; 99us; 3us; 32768us; 27us; 102us; 28us; 101us; 29us; 103us; 0us; 16422us; 0us; 16423us; 0us; 16424us; 0us; 16425us; 1us; 32768us; 1us; 105us; 3us; 32768us; 27us; 102us; 28us; 101us; 29us; 103us; 1us; 16418us; 13us; 92us; 0us; 16426us; 1us; 16418us; 13us; 92us; 0us; 16428us; 1us; 16418us; 13us; 92us; 0us; 16430us; 1us; 16431us; 0us; 72us; 0us; 16432us; 1us; 16433us; 11us; 115us; 1us; 32768us; 29us; 114us; 0us; 16434us; 1us; 16435us; 29us; 104us; 0us; 16437us; 2us; 16438us; 25us; 82us; 26us; 85us; 0us; 16440us; 2us; 16418us; 13us; 92us; 29us; 94us; 0us; 16442us; 0us; 16443us; 1us; 16444us; 16us; 31us; 0us; 16446us; 1us; 16447us; 20us; 20us; 0us; 16449us; 1us; 16450us; 21us; 24us; 0us; 16451us; 1us; 16452us; 22us; 45us; 0us; 16454us; |]
+let _fsyacc_actionTableRowOffsets = [|0us; 2us; 3us; 5us; 6us; 7us; 8us; 9us; 10us; 12us; 13us; 16us; 18us; 20us; 22us; 24us; 26us; 27us; 29us; 31us; 32us; 34us; 36us; 38us; 39us; 41us; 45us; 47us; 49us; 52us; 54us; 55us; 58us; 60us; 63us; 65us; 66us; 70us; 72us; 74us; 76us; 79us; 81us; 82us; 83us; 84us; 86us; 90us; 92us; 94us; 97us; 99us; 101us; 103us; 106us; 108us; 109us; 111us; 113us; 115us; 117us; 119us; 120us; 122us; 129us; 130us; 132us; 133us; 135us; 136us; 138us; 140us; 141us; 143us; 145us; 148us; 150us; 151us; 158us; 162us; 163us; 167us; 168us; 170us; 175us; 176us; 178us; 183us; 184us; 186us; 187us; 189us; 190us; 192us; 193us; 195us; 197us; 199us; 200us; 202us; 206us; 207us; 208us; 209us; 210us; 212us; 216us; 218us; 219us; 221us; 222us; 224us; 225us; 227us; 228us; 230us; 232us; 233us; 235us; 236us; 239us; 240us; 243us; 244us; 245us; 247us; 248us; 250us; 251us; 253us; 254us; 256us; |]
+let _fsyacc_reductionSymbolCounts = [|1us; 1us; 1us; 1us; 1us; 1us; 1us; 2us; 7us; 3us; 4us; 7us; 5us; 8us; 1us; 1us; 7us; 11us; 6us; 0us; 1us; 3us; 4us; 0us; 2us; 3us; 5us; 0us; 4us; 3us; 3us; 3us; 4us; 4us; 0us; 1us; 2us; 4us; 3us; 1us; 1us; 1us; 4us; 0us; 2us; 0us; 2us; 1us; 2us; 1us; 3us; 0us; 1us; 2us; 0us; 1us; 2us; 0us; 2us; 2us; 0us; 1us; 2us; 0us; 1us; 2us; 1us; 2us; 0us; 1us; 2us; |]
+let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 1us; 1us; 1us; 1us; 1us; 2us; 3us; 3us; 4us; 5us; 6us; 6us; 7us; 8us; 9us; 9us; 10us; 11us; 11us; 11us; 11us; 12us; 12us; 12us; 13us; 14us; 14us; 14us; 15us; 15us; 15us; 15us; 16us; 16us; 16us; 17us; 18us; 19us; 19us; 19us; 20us; 21us; 21us; 22us; 22us; 23us; 23us; 24us; 24us; 25us; 25us; 25us; 26us; 26us; 26us; 27us; 27us; 27us; 28us; 28us; 28us; 29us; 29us; 29us; 30us; 30us; 31us; 31us; 31us; |]
+let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 16386us; 16387us; 16388us; 16389us; 16390us; 65535us; 16391us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16392us; 65535us; 65535us; 16393us; 65535us; 65535us; 65535us; 16394us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16395us; 65535us; 65535us; 65535us; 65535us; 16396us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16397us; 16398us; 16399us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16401us; 65535us; 65535us; 65535us; 65535us; 65535us; 16402us; 65535us; 65535us; 16405us; 65535us; 16406us; 65535us; 16408us; 65535us; 65535us; 16409us; 65535us; 65535us; 65535us; 65535us; 16410us; 65535us; 65535us; 16412us; 65535us; 16413us; 65535us; 65535us; 16414us; 65535us; 65535us; 16415us; 65535us; 16416us; 65535us; 16417us; 65535us; 16420us; 65535us; 65535us; 65535us; 16421us; 65535us; 65535us; 16422us; 16423us; 16424us; 16425us; 65535us; 65535us; 65535us; 16426us; 65535us; 16428us; 65535us; 16430us; 65535us; 16432us; 65535us; 65535us; 16434us; 65535us; 16437us; 65535us; 16440us; 65535us; 16442us; 16443us; 65535us; 16446us; 65535us; 16449us; 65535us; 16451us; 65535us; 16454us; |]
 let _fsyacc_reductions ()  =    [| 
-# 313 "AlvisParser.fs"
+# 340 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : AlvisSpec.Agents)) in
             Microsoft.FSharp.Core.Operators.box
@@ -319,111 +346,142 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startstart));
-# 322 "AlvisParser.fs"
+# 349 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisStatements)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 27 "AlvisParser.fsp"
+# 26 "AlvisParser.fsp"
+                              Eq 
+                   )
+# 26 "AlvisParser.fsp"
+                 : 'op));
+# 359 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 26 "AlvisParser.fsp"
+                                          Lt 
+                   )
+# 26 "AlvisParser.fsp"
+                 : 'op));
+# 369 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 26 "AlvisParser.fsp"
+                                                      Le 
+                   )
+# 26 "AlvisParser.fsp"
+                 : 'op));
+# 379 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 26 "AlvisParser.fsp"
+                                                                  Gt 
+                   )
+# 26 "AlvisParser.fsp"
+                 : 'op));
+# 389 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 26 "AlvisParser.fsp"
+                                                                              Ge 
+                   )
+# 26 "AlvisParser.fsp"
+                 : 'op));
+# 399 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 26 "AlvisParser.fsp"
+                                                                                          Ne
+                   )
+# 26 "AlvisParser.fsp"
+                 : 'op));
+# 409 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisAgentsList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 30 "AlvisParser.fsp"
                                                   _1
                    )
-# 27 "AlvisParser.fsp"
+# 30 "AlvisParser.fsp"
                  : AlvisSpec.Agents));
-# 333 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisStatement)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 30 "AlvisParser.fsp"
-                                           [_1]
-                   )
-# 30 "AlvisParser.fsp"
-                 : 'alvisStatements));
-# 344 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisStatement)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisStatements)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 31 "AlvisParser.fsp"
-                                                           _1 :: _2
-                   )
-# 31 "AlvisParser.fsp"
-                 : 'alvisStatements));
-# 356 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'agentList)) in
-            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'agentBody)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 34 "AlvisParser.fsp"
-                                                                              {AgentList =  _2; AgentBody = _4}
-                   )
-# 34 "AlvisParser.fsp"
-                 : 'alvisStatement));
-# 368 "AlvisParser.fs"
+# 420 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueList)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'loopClause)) in
-            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionClause)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionList)) in
             let _5 = (let data = parseState.GetInput(5) in (Microsoft.FSharp.Core.Operators.unbox data : 'procList)) in
+            let _6 = (let data = parseState.GetInput(6) in (Microsoft.FSharp.Core.Operators.unbox data : 'exitClause)) in
+            let _7 = (let data = parseState.GetInput(7) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 38 "AlvisParser.fsp"
-                                                                                              {Null = false; Values = _1; Ports = _2;  Looping = _3; Condition = _4; Proc=_5}
+# 35 "AlvisParser.fsp"
+                                                                                                               {Null = false; Values = _1; Ports = _2;  Looping = _3; Condition = _4; Proc=_5}
                    )
-# 38 "AlvisParser.fsp"
+# 35 "AlvisParser.fsp"
                  : 'agentBody));
-# 383 "AlvisParser.fs"
+# 437 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'exitClause)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 36 "AlvisParser.fsp"
+                                                                                                          {Null = true;  Values = []; Ports = [];  Looping = None; Condition  = []; Proc=[]}
+                   )
+# 36 "AlvisParser.fsp"
+                 : 'agentBody));
+# 449 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'altList)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
 # 39 "AlvisParser.fsp"
-                                                                                       {Null = true;  Values = []; Ports = [];  Looping = None; Condition  = []; Proc=[]}
+                                                                  {Alt = _3}
                    )
 # 39 "AlvisParser.fsp"
-                 : 'agentBody));
-# 393 "AlvisParser.fs"
+                 : 'selectClause));
+# 460 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'guardClause)) in
+            let _6 = (let data = parseState.GetInput(6) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionBody)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
 # 43 "AlvisParser.fsp"
-                            []
+                                                                                                                  {Guard=_3; ConditionBody=_6; ElseConditionBody=None}
                    )
 # 43 "AlvisParser.fsp"
-                 : 'procList));
-# 403 "AlvisParser.fs"
+                 : 'altClause));
+# 472 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'procClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionBody)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 44 "AlvisParser.fsp"
-                                       [_1]
+# 46 "AlvisParser.fsp"
+                                                                          {Condition = None; Port= _2; ProcBody=_4}
                    )
-# 44 "AlvisParser.fsp"
-                 : 'procList));
-# 414 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'procClause)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'procList)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 45 "AlvisParser.fsp"
-                                                _1 :: _2
-                   )
-# 45 "AlvisParser.fsp"
-                 : 'procList));
-# 426 "AlvisParser.fs"
+# 46 "AlvisParser.fsp"
+                 : 'procClause));
+# 484 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'guardClause)) in
             let _5 = (let data = parseState.GetInput(5) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
@@ -431,80 +489,46 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 49 "AlvisParser.fsp"
-                                                                                                                    {Condition = Some(_3); Port=_5; ProcBody=_7}
+# 47 "AlvisParser.fsp"
+                                                                                                                     {Condition = Some(_3); Port= _5; ProcBody=_7}
                    )
-# 49 "AlvisParser.fsp"
+# 47 "AlvisParser.fsp"
                  : 'procClause));
-# 439 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
-            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionBody)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 50 "AlvisParser.fsp"
-                                                                                                                    {Condition = None    ;   Port=_2; ProcBody=_4}
-                   )
-# 50 "AlvisParser.fsp"
-                 : 'procClause));
-# 451 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 54 "AlvisParser.fsp"
-                            []
-                   )
-# 54 "AlvisParser.fsp"
-                 : 'conditionClause));
-# 461 "AlvisParser.fs"
+# 497 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionIfElseClause)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 55 "AlvisParser.fsp"
-                                                  [_1]
+# 51 "AlvisParser.fsp"
+                                                  _1
                    )
-# 55 "AlvisParser.fsp"
+# 51 "AlvisParser.fsp"
                  : 'conditionClause));
-# 472 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionIfElseClause)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionClause)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 56 "AlvisParser.fsp"
-                                                                     _1 :: _2 
-                   )
-# 56 "AlvisParser.fsp"
-                 : 'conditionClause));
-# 484 "AlvisParser.fs"
+# 508 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionIfClause)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 60 "AlvisParser.fsp"
+# 55 "AlvisParser.fsp"
                                               _1
                    )
-# 60 "AlvisParser.fsp"
+# 55 "AlvisParser.fsp"
                  : 'conditionIfElseClause));
-# 495 "AlvisParser.fs"
+# 519 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'guardClause)) in
             let _6 = (let data = parseState.GetInput(6) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionBody)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 63 "AlvisParser.fsp"
+# 58 "AlvisParser.fsp"
                                                                                                                  {Guard=_3; ConditionBody=_6; ElseConditionBody=None}
                    )
-# 63 "AlvisParser.fsp"
+# 58 "AlvisParser.fsp"
                  : 'conditionIfClause));
-# 507 "AlvisParser.fs"
+# 531 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'guardClause)) in
             let _6 = (let data = parseState.GetInput(6) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionBody)) in
@@ -512,22 +536,137 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 64 "AlvisParser.fsp"
-                                                                                                                                                           {Guard=_3; ConditionBody=_6; ElseConditionBody=Some(_10)}
+# 59 "AlvisParser.fsp"
+                                                                                                                                                         {Guard=_3; ConditionBody=_6; ElseConditionBody=Some(_10)}
                    )
-# 64 "AlvisParser.fsp"
+# 59 "AlvisParser.fsp"
                  : 'conditionIfClause));
-# 520 "AlvisParser.fs"
+# 544 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'loopClause)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionList)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'assignList)) in
+            let _5 = (let data = parseState.GetInput(5) in (Microsoft.FSharp.Core.Operators.unbox data : 'nullClause)) in
+            let _6 = (let data = parseState.GetInput(6) in (Microsoft.FSharp.Core.Operators.unbox data : 'exitClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 63 "AlvisParser.fsp"
+                                                                                                       { Ports = _1;  Looping = _2; Condition = _3; Assign=_4;  Null=_5;  Exit= _6}
+                   )
+# 63 "AlvisParser.fsp"
+                 : 'conditionBody));
+# 560 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 67 "AlvisParser.fsp"
+# 68 "AlvisParser.fsp"
+                            None
+                   )
+# 68 "AlvisParser.fsp"
+                 : 'loopClause));
+# 570 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 69 "AlvisParser.fsp"
+                                 None
+                   )
+# 69 "AlvisParser.fsp"
+                 : 'loopClause));
+# 580 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 70 "AlvisParser.fsp"
+                                                        None
+                   )
+# 70 "AlvisParser.fsp"
+                 : 'loopClause));
+# 590 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'loopBody)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 71 "AlvisParser.fsp"
+                                                                 Some(_3)
+                   )
+# 71 "AlvisParser.fsp"
+                 : 'loopClause));
+# 601 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 74 "AlvisParser.fsp"
+                            {Exit = false; Ports=[] ; Select=[]; Condition=[]}
+                   )
+# 74 "AlvisParser.fsp"
+                 : 'loopBody));
+# 611 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 75 "AlvisParser.fsp"
+                                          {Exit= true; Ports=[]; Select=[]; Condition=[]}
+                   )
+# 75 "AlvisParser.fsp"
+                 : 'loopBody));
+# 622 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'selectList)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 76 "AlvisParser.fsp"
+                                                              {Exit=false; Ports = _1 ; Select=_2; Condition=_3}
+                   )
+# 76 "AlvisParser.fsp"
+                 : 'loopBody));
+# 635 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'agentList)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'agentBody)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 87 "AlvisParser.fsp"
+                                                                              {AgentList =  _2; AgentBody = _4}
+                   )
+# 87 "AlvisParser.fsp"
+                 : 'alvisStatement));
+# 647 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 91 "AlvisParser.fsp"
                             Const(true)
                    )
-# 67 "AlvisParser.fsp"
+# 91 "AlvisParser.fsp"
                  : 'guardClause));
-# 530 "AlvisParser.fs"
+# 657 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 92 "AlvisParser.fsp"
+                                              Cond(_1,Eq, _4)
+                   )
+# 92 "AlvisParser.fsp"
+                 : 'guardClause));
+# 669 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'op)) in
@@ -535,371 +674,474 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 68 "AlvisParser.fsp"
+# 93 "AlvisParser.fsp"
                                             Cond(_1,_2,_3)
                    )
-# 68 "AlvisParser.fsp"
+# 93 "AlvisParser.fsp"
                  : 'guardClause));
-# 543 "AlvisParser.fs"
+# 682 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'loopClause)) in
-            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 71 "AlvisParser.fsp"
-                                                                             { Ports = _1;  Looping = _2; Condition = _3}
+# 96 "AlvisParser.fsp"
+                                               In(_2, None)
                    )
-# 71 "AlvisParser.fsp"
-                 : 'conditionBody));
-# 556 "AlvisParser.fs"
+# 96 "AlvisParser.fsp"
+                 : 'portClause));
+# 694 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 75 "AlvisParser.fsp"
-                            None
+# 97 "AlvisParser.fsp"
+                                               Out(_2, None)
                    )
-# 75 "AlvisParser.fsp"
-                 : 'loopClause));
-# 566 "AlvisParser.fs"
+# 97 "AlvisParser.fsp"
+                 : 'portClause));
+# 706 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 76 "AlvisParser.fsp"
-                                 None
+# 98 "AlvisParser.fsp"
+                                                    In(_2, Some(_3))
                    )
-# 76 "AlvisParser.fsp"
-                 : 'loopClause));
-# 576 "AlvisParser.fs"
+# 98 "AlvisParser.fsp"
+                 : 'portClause));
+# 719 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 77 "AlvisParser.fsp"
-                                                        None
+# 99 "AlvisParser.fsp"
+                                                     Out(_2, Some(_3))
                    )
-# 77 "AlvisParser.fsp"
-                 : 'loopClause));
-# 586 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'loopBody)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 78 "AlvisParser.fsp"
-                                                                 Some(_3)
-                   )
-# 78 "AlvisParser.fsp"
-                 : 'loopClause));
-# 597 "AlvisParser.fs"
+# 99 "AlvisParser.fsp"
+                 : 'portClause));
+# 732 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 81 "AlvisParser.fsp"
-                            {Exit = false; Ports=[] }
+# 102 "AlvisParser.fsp"
+                              
                    )
-# 81 "AlvisParser.fsp"
-                 : 'loopBody));
-# 607 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 82 "AlvisParser.fsp"
-                                          {Exit= true; Ports=[]}
-                   )
-# 82 "AlvisParser.fsp"
-                 : 'loopBody));
-# 618 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 83 "AlvisParser.fsp"
-                                     {Exit=false; Ports = _1 }
-                   )
-# 83 "AlvisParser.fsp"
-                 : 'loopBody));
-# 629 "AlvisParser.fs"
+# 102 "AlvisParser.fsp"
+                 : 'nextLine));
+# 742 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 86 "AlvisParser.fsp"
-                              []
+# 103 "AlvisParser.fsp"
+                                      
                    )
-# 86 "AlvisParser.fsp"
-                 : 'valueList));
-# 639 "AlvisParser.fs"
+# 103 "AlvisParser.fsp"
+                 : 'nextLine));
+# 752 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueClause)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 87 "AlvisParser.fsp"
-                                        [_1]
+# 104 "AlvisParser.fsp"
+                                              
                    )
-# 87 "AlvisParser.fsp"
-                 : 'valueList));
-# 650 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueList)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
-            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueClause)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 88 "AlvisParser.fsp"
-                                                             _3::_1 
-                   )
-# 88 "AlvisParser.fsp"
-                 : 'valueList));
-# 663 "AlvisParser.fs"
+# 104 "AlvisParser.fsp"
+                 : 'nextLine));
+# 762 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueType)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 92 "AlvisParser.fsp"
-                                                      {Name = _1; Value = _3 }
+# 107 "AlvisParser.fsp"
+                                                               {Name = _1; Value = _3 }
                    )
-# 92 "AlvisParser.fsp"
+# 107 "AlvisParser.fsp"
                  : 'valueClause));
-# 675 "AlvisParser.fs"
+# 775 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 95 "AlvisParser.fsp"
-                                                                      _3 
+# 110 "AlvisParser.fsp"
+                                                                       _3 
                    )
-# 95 "AlvisParser.fsp"
+# 110 "AlvisParser.fsp"
                  : 'valueType));
-# 687 "AlvisParser.fs"
+# 787 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : int)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 99 "AlvisParser.fsp"
+# 114 "AlvisParser.fsp"
                                                    Int(_1) 
                    )
-# 99 "AlvisParser.fsp"
+# 114 "AlvisParser.fsp"
                  : 'value));
-# 698 "AlvisParser.fs"
+# 798 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : float)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 100 "AlvisParser.fsp"
+# 115 "AlvisParser.fsp"
                                                    Float(_1) 
                    )
-# 100 "AlvisParser.fsp"
+# 115 "AlvisParser.fsp"
                  : 'value));
-# 709 "AlvisParser.fs"
+# 809 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 101 "AlvisParser.fsp"
+# 116 "AlvisParser.fsp"
                                                    String(_1) 
                    )
-# 101 "AlvisParser.fsp"
+# 116 "AlvisParser.fsp"
                  : 'value));
-# 720 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : bool)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 102 "AlvisParser.fsp"
-                                       Bool(_1)
-                   )
-# 102 "AlvisParser.fsp"
-                 : 'value));
-# 731 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 106 "AlvisParser.fsp"
-                              Eq 
-                   )
-# 106 "AlvisParser.fsp"
-                 : 'op));
-# 741 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 106 "AlvisParser.fsp"
-                                          Lt 
-                   )
-# 106 "AlvisParser.fsp"
-                 : 'op));
-# 751 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 106 "AlvisParser.fsp"
-                                                      Le 
-                   )
-# 106 "AlvisParser.fsp"
-                 : 'op));
-# 761 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 106 "AlvisParser.fsp"
-                                                                  Gt 
-                   )
-# 106 "AlvisParser.fsp"
-                 : 'op));
-# 771 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 106 "AlvisParser.fsp"
-                                                                              Ge 
-                   )
-# 106 "AlvisParser.fsp"
-                 : 'op));
-# 781 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 106 "AlvisParser.fsp"
-                                                                                          Ne
-                   )
-# 106 "AlvisParser.fsp"
-                 : 'op));
-# 791 "AlvisParser.fs"
+# 820 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'value)) in
+            let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 109 "AlvisParser.fsp"
-                                                   [_1]
+# 120 "AlvisParser.fsp"
+                                                 {Name=_1; Value=_3}
                    )
-# 109 "AlvisParser.fsp"
-                 : 'agentList));
-# 802 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'agentList)) in
-            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 110 "AlvisParser.fsp"
-                                                 _3 :: _1 
-                   )
-# 110 "AlvisParser.fsp"
-                 : 'agentList));
-# 814 "AlvisParser.fs"
+# 120 "AlvisParser.fsp"
+                 : 'assignClause));
+# 833 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 113 "AlvisParser.fsp"
-                              
+# 123 "AlvisParser.fsp"
+                             false
                    )
-# 113 "AlvisParser.fsp"
-                 : 'nextLine));
-# 824 "AlvisParser.fs"
+# 123 "AlvisParser.fsp"
+                 : 'nullClause));
+# 843 "AlvisParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 114 "AlvisParser.fsp"
-                                      
-                   )
-# 114 "AlvisParser.fsp"
-                 : 'nextLine));
-# 834 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 115 "AlvisParser.fsp"
-                                              
-                   )
-# 115 "AlvisParser.fsp"
-                 : 'nextLine));
-# 844 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 118 "AlvisParser.fsp"
-                                   [] 
-                   )
-# 118 "AlvisParser.fsp"
-                 : 'portList));
-# 854 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portClause)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 119 "AlvisParser.fsp"
-                                                [_1]
-                   )
-# 119 "AlvisParser.fsp"
-                 : 'portList));
-# 866 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'portClause)) in
-            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 120 "AlvisParser.fsp"
-                                                            _2 :: _1
-                   )
-# 120 "AlvisParser.fsp"
-                 : 'portList));
-# 879 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 123 "AlvisParser.fsp"
-                                       In(_2)
-                   )
-# 123 "AlvisParser.fsp"
-                 : 'portClause));
-# 890 "AlvisParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
 # 124 "AlvisParser.fsp"
-                                       Out(_2)
+                                           true
                    )
 # 124 "AlvisParser.fsp"
-                 : 'portClause));
+                 : 'nullClause));
+# 854 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 127 "AlvisParser.fsp"
+                             false
+                   )
+# 127 "AlvisParser.fsp"
+                 : 'exitClause));
+# 864 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 128 "AlvisParser.fsp"
+                                           true
+                   )
+# 128 "AlvisParser.fsp"
+                 : 'exitClause));
+# 875 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisStatement)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 135 "AlvisParser.fsp"
+                                           [_1]
+                   )
+# 135 "AlvisParser.fsp"
+                 : 'alvisAgentsList));
+# 886 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisStatement)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'alvisAgentsList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 136 "AlvisParser.fsp"
+                                                           _1 :: _2
+                   )
+# 136 "AlvisParser.fsp"
+                 : 'alvisAgentsList));
+# 898 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 140 "AlvisParser.fsp"
+                                                   [_1]
+                   )
+# 140 "AlvisParser.fsp"
+                 : 'agentList));
+# 909 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
+            let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'agentList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 141 "AlvisParser.fsp"
+                                                 _1 :: _3 
+                   )
+# 141 "AlvisParser.fsp"
+                 : 'agentList));
+# 921 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 144 "AlvisParser.fsp"
+                            []
+                   )
+# 144 "AlvisParser.fsp"
+                 : 'assignList));
+# 931 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'assignClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 145 "AlvisParser.fsp"
+                                         [_1]
+                   )
+# 145 "AlvisParser.fsp"
+                 : 'assignList));
+# 942 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'assignClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'assignList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 146 "AlvisParser.fsp"
+                                                    _1 :: _2
+                   )
+# 146 "AlvisParser.fsp"
+                 : 'assignList));
+# 954 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 149 "AlvisParser.fsp"
+                                   [] 
+                   )
+# 149 "AlvisParser.fsp"
+                 : 'portList));
+# 964 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 150 "AlvisParser.fsp"
+                                        [_1]
+                   )
+# 150 "AlvisParser.fsp"
+                 : 'portList));
+# 975 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'portClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'portList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 151 "AlvisParser.fsp"
+                                                   _1 :: _2
+                   )
+# 151 "AlvisParser.fsp"
+                 : 'portList));
+# 987 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 154 "AlvisParser.fsp"
+                              []
+                   )
+# 154 "AlvisParser.fsp"
+                 : 'valueList));
+# 997 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'nextLine)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 155 "AlvisParser.fsp"
+                                                 [_1]
+                   )
+# 155 "AlvisParser.fsp"
+                 : 'valueList));
+# 1009 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'valueList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 156 "AlvisParser.fsp"
+                                                   _1::_2 
+                   )
+# 156 "AlvisParser.fsp"
+                 : 'valueList));
+# 1021 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 159 "AlvisParser.fsp"
+                            []
+                   )
+# 159 "AlvisParser.fsp"
+                 : 'procList));
+# 1031 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'procClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 160 "AlvisParser.fsp"
+                                       [_1]
+                   )
+# 160 "AlvisParser.fsp"
+                 : 'procList));
+# 1042 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'procClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'procList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 161 "AlvisParser.fsp"
+                                                 _1 :: _2 
+                   )
+# 161 "AlvisParser.fsp"
+                 : 'procList));
+# 1054 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 164 "AlvisParser.fsp"
+                            []
+                   )
+# 164 "AlvisParser.fsp"
+                 : 'selectList));
+# 1064 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'selectClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 165 "AlvisParser.fsp"
+                                         [_1]
+                   )
+# 165 "AlvisParser.fsp"
+                 : 'selectList));
+# 1075 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'selectClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'selectList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 166 "AlvisParser.fsp"
+                                                     _1 :: _2 
+                   )
+# 166 "AlvisParser.fsp"
+                 : 'selectList));
+# 1087 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'altClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 169 "AlvisParser.fsp"
+                                      [_1]
+                   )
+# 169 "AlvisParser.fsp"
+                 : 'altList));
+# 1098 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'altClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'altList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 170 "AlvisParser.fsp"
+                                              _1 :: _2
+                   )
+# 170 "AlvisParser.fsp"
+                 : 'altList));
+# 1110 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 173 "AlvisParser.fsp"
+                            []
+                   )
+# 173 "AlvisParser.fsp"
+                 : 'conditionList));
+# 1120 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionClause)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 174 "AlvisParser.fsp"
+                                            [_1]
+                   )
+# 174 "AlvisParser.fsp"
+                 : 'conditionList));
+# 1131 "AlvisParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionClause)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'conditionList)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 175 "AlvisParser.fsp"
+                                                           _1 :: _2 
+                   )
+# 175 "AlvisParser.fsp"
+                 : 'conditionList));
 |]
-# 902 "AlvisParser.fs"
+# 1144 "AlvisParser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;

@@ -26,7 +26,7 @@ let ops =
         "<=",   LE;   
         ">",    GT;    
         ">=",   GE;    
-        "/=",   NE    
+        "/=",   NE;    
     ] |> Map.ofList 
 }   
  

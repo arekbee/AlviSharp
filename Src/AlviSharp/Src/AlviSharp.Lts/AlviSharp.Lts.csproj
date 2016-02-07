@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{065D34B7-867B-4F90-B118-DA8FA25FD690}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>AlviSharp.Lts</RootNamespace>
     <AssemblyName>AlviSharp.Lts</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -29,10 +29,35 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="FSharp.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
+    <Compile Include="MyClass.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\AlviSharp.Parser\AlviSharp.Parser.fsproj">
+      <Project>{67AED1F5-E248-4C1D-9296-270E9861E829}</Project>
+      <Name>AlviSharp.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AlviSharp.Lib\AlviSharp.Lib.csproj">
+      <Project>{989D56B6-BCC8-4A8F-A539-650465A338DA}</Project>
+      <Name>AlviSharp.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AlviSharp.Serializer\AlviSharp.Serializer.csproj">
+      <Project>{DE46321F-1C02-4138-9D52-6918831B22E8}</Project>
+      <Name>AlviSharp.Serializer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="example.alviscode">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="sender_buffer_receiver.alvis">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

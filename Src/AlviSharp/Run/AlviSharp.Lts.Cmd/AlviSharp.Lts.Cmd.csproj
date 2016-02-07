@@ -18,7 +18,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -28,6 +29,12 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -37,4 +44,23 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\AlviSharp.Lib\AlviSharp.Lib.csproj">
+      <Project>{989D56B6-BCC8-4A8F-A539-650465A338DA}</Project>
+      <Name>AlviSharp.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\AlviSharp.Lts\AlviSharp.Lts.csproj">
+      <Project>{065D34B7-867B-4F90-B118-DA8FA25FD690}</Project>
+      <Name>AlviSharp.Lts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\AlviSharp.Parser\AlviSharp.Parser.fsproj">
+      <Project>{67AED1F5-E248-4C1D-9296-270E9861E829}</Project>
+      <Name>AlviSharp.Parser</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="example.alviscode">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

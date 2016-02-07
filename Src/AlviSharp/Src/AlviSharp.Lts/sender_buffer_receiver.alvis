@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE alvisproject PUBLIC "alvisPublicId-v0.1" "alvisSystemId-v0.1">
+<alvisproject>
+<hierarchy>
+<node agent="" name="System"/>
+</hierarchy>
+<page name="System">
+<agent active="1" color="white" height="100.0" index="1" name="Sender" running="0" width="140.0" x="20.0" y="20.0">
+<port color="white" id="2137566524" name="put" x="1.0" y="0.20000000000000007"/>
+</agent>
+<agent active="1" color="white" height="100.0" index="1" name="Receiver" running="0" width="140.0" x="20.0" y="210.0">
+<port color="white" id="1113914828" name="get" x="1.0" y="0.30000000000000004"/>
+</agent>
+<agent active="0" color="white" height="100.0" index="1" name="Buffer" running="0" width="140.0" x="350.0" y="110.0">
+<port color="white" id="917314522" name="put" x="0.0" y="0.2"/>
+<port color="white" id="454677781" name="get" x="0.0" y="0.6000000000000001"/>
+</agent>
+<connection direction="target" source="2137566524" style="straight" target="917314522"/>
+<connection direction="target" source="454677781" style="straight" target="1113914828"/>
+</page>
+<code>
+    agent Sender {
+    loop {
+    out put;
+    }
+    }
+
+
+    agent Buffer {
+    i :: Int  = 0;
+    proc (i &gt;= 0) put {
+    in put;
+    i = 1;
+    exit;
+    }
+
+    proc (i /= 0) get {
+    out get;
+    i=0;
+    exit;
+    }
+    }
+
+    agent Receiver {
+    loop{
+      in get;
+    }
+    }
+
+  </code>
+</alvisproject>
+

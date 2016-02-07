@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace AlviSharp.Lts.Cmd
 {
@@ -6,7 +7,14 @@ namespace AlviSharp.Lts.Cmd
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("Hello World!");
+			string filePath = "example.alviscode";
+
+			var content = File.ReadAllText(filePath);
+
+
+			LtsGenerator lts = new LtsGenerator ();
+			lts.Generate (content);
+
 		}
 	}
 }

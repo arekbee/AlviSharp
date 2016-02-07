@@ -16,6 +16,8 @@ let keywords =
         "exit", EXIT;
         "if", IF; 
         "else", ELSE;
+        "select", SELECT;
+        "alt", ALT;
     ] |> Map.ofList     
  
 let ops =   
@@ -25,10 +27,10 @@ let ops =
         "<=",   LE;   
         ">",    GT;    
         ">=",   GE;    
-        "/=",   NE    
+        "/=",   NE;    
     ] |> Map.ofList 
 
-# 31 "AlvisLexer.fs"
+# 33 "AlvisLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -95,81 +97,81 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 42 "AlvisLexer.fsl"
+# 43 "AlvisLexer.fsl"
                                  tokenize lexbuf 
-# 100 "AlvisLexer.fs"
+# 102 "AlvisLexer.fs"
           )
   | 1 -> ( 
-# 43 "AlvisLexer.fsl"
+# 44 "AlvisLexer.fsl"
                                  lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf; 
-# 105 "AlvisLexer.fs"
+# 107 "AlvisLexer.fs"
           )
   | 2 -> ( 
-# 44 "AlvisLexer.fsl"
+# 45 "AlvisLexer.fsl"
                                  INT(Int32.Parse(LexBuffer<_>.LexemeString lexbuf)) 
-# 110 "AlvisLexer.fs"
+# 112 "AlvisLexer.fs"
           )
   | 3 -> ( 
-# 45 "AlvisLexer.fsl"
+# 46 "AlvisLexer.fsl"
                                  FLOAT(Double.Parse(LexBuffer<_>.LexemeString lexbuf)) 
-# 115 "AlvisLexer.fs"
+# 117 "AlvisLexer.fs"
           )
   | 4 -> ( 
-# 46 "AlvisLexer.fsl"
+# 47 "AlvisLexer.fsl"
                                  ops.[LexBuffer<_>.LexemeString lexbuf] 
-# 120 "AlvisLexer.fs"
+# 122 "AlvisLexer.fs"
           )
   | 5 -> ( 
-# 47 "AlvisLexer.fsl"
+# 48 "AlvisLexer.fsl"
                                  match keywords.TryFind(LexBuffer<_>.LexemeString lexbuf) with   
                                  | Some(token) -> token   
                                  | None -> ID(LexBuffer<_>.LexemeString lexbuf) 
-# 127 "AlvisLexer.fs"
+# 129 "AlvisLexer.fs"
           )
   | 6 -> ( 
-# 50 "AlvisLexer.fsl"
+# 51 "AlvisLexer.fsl"
                                  COMMA 
-# 132 "AlvisLexer.fs"
+# 134 "AlvisLexer.fs"
           )
   | 7 -> ( 
-# 51 "AlvisLexer.fsl"
+# 52 "AlvisLexer.fsl"
                          BRACESOPEN 
-# 137 "AlvisLexer.fs"
+# 139 "AlvisLexer.fs"
           )
   | 8 -> ( 
-# 52 "AlvisLexer.fsl"
+# 53 "AlvisLexer.fsl"
                          BRACESCLOSE 
-# 142 "AlvisLexer.fs"
+# 144 "AlvisLexer.fs"
           )
   | 9 -> ( 
-# 54 "AlvisLexer.fsl"
+# 55 "AlvisLexer.fsl"
                          PARENTHESEOPEN 
-# 147 "AlvisLexer.fs"
+# 149 "AlvisLexer.fs"
           )
   | 10 -> ( 
-# 55 "AlvisLexer.fsl"
+# 56 "AlvisLexer.fsl"
                          PARENTHESECLOSE 
-# 152 "AlvisLexer.fs"
+# 154 "AlvisLexer.fs"
           )
   | 11 -> ( 
-# 57 "AlvisLexer.fsl"
+# 58 "AlvisLexer.fsl"
                           DOUBLECOLON 
-# 157 "AlvisLexer.fs"
+# 159 "AlvisLexer.fs"
           )
   | 12 -> ( 
-# 58 "AlvisLexer.fsl"
+# 59 "AlvisLexer.fsl"
                          SEMICOLON 
-# 162 "AlvisLexer.fs"
+# 164 "AlvisLexer.fs"
           )
   | 13 -> ( 
-# 59 "AlvisLexer.fsl"
+# 60 "AlvisLexer.fsl"
                           COMMENT 
-# 167 "AlvisLexer.fs"
+# 169 "AlvisLexer.fs"
           )
   | 14 -> ( 
-# 60 "AlvisLexer.fsl"
+# 61 "AlvisLexer.fsl"
                                  EOF 
-# 172 "AlvisLexer.fs"
+# 174 "AlvisLexer.fs"
           )
   | _ -> failwith "tokenize"
 

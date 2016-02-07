@@ -22,12 +22,12 @@ type token =
   | LOOP
   | EXIT
   | SELECT
+  | ALT
   | IF
   | ELSE
   | PORT
   | IN
   | OUT
-  | BOOL of (bool)
   | FLOAT of (float)
   | INT of (int)
   | ID of (string)
@@ -53,12 +53,12 @@ type tokenId =
     | TOKEN_LOOP
     | TOKEN_EXIT
     | TOKEN_SELECT
+    | TOKEN_ALT
     | TOKEN_IF
     | TOKEN_ELSE
     | TOKEN_PORT
     | TOKEN_IN
     | TOKEN_OUT
-    | TOKEN_BOOL
     | TOKEN_FLOAT
     | TOKEN_INT
     | TOKEN_ID
@@ -66,28 +66,37 @@ type tokenId =
     | TOKEN_error
 type nonTerminalId = 
     | NONTERM__startstart
+    | NONTERM_op
     | NONTERM_start
-    | NONTERM_alvisStatements
-    | NONTERM_alvisStatement
     | NONTERM_agentBody
-    | NONTERM_procList
+    | NONTERM_selectClause
+    | NONTERM_altClause
     | NONTERM_procClause
     | NONTERM_conditionClause
     | NONTERM_conditionIfElseClause
     | NONTERM_conditionIfClause
-    | NONTERM_guardClause
     | NONTERM_conditionBody
     | NONTERM_loopClause
     | NONTERM_loopBody
-    | NONTERM_valueList
+    | NONTERM_alvisStatement
+    | NONTERM_guardClause
+    | NONTERM_portClause
+    | NONTERM_nextLine
     | NONTERM_valueClause
     | NONTERM_valueType
     | NONTERM_value
-    | NONTERM_op
+    | NONTERM_assignClause
+    | NONTERM_nullClause
+    | NONTERM_exitClause
+    | NONTERM_alvisAgentsList
     | NONTERM_agentList
-    | NONTERM_nextLine
+    | NONTERM_assignList
     | NONTERM_portList
-    | NONTERM_portClause
+    | NONTERM_valueList
+    | NONTERM_procList
+    | NONTERM_selectList
+    | NONTERM_altList
+    | NONTERM_conditionList
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 
